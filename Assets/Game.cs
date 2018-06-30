@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System.Timers;
 using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(AudioSource))]
 public class Game : MonoBehaviour {
 
 	public Transform canvas;
@@ -40,11 +41,17 @@ public class Game : MonoBehaviour {
 	private GameObject test;
 	private float time;
 
+	private AudioSource audioSource;
+	private Object[] popSounds;
+
 	// Use this for initialization
 	void Start () {
 		wallSprite = Resources.Load<Sprite> ("Square");
 		spriteWidth = wallSprite.bounds.size.x;
 		canvasDimensions = canvas.GetComponent<RectTransform> ().rect;
+
+		audioSource = GetComponent<AudioSource> ();
+		popSounds = Resources.LoadAll ("Sounds", typeof(AudioClip));
 
 		/*walls = new GameObject[4];
 		for (int i = 0; i < walls.Length; i++) {
@@ -54,7 +61,7 @@ public class Game : MonoBehaviour {
 		bubbles = new List<GameObject>();
 		bubbleObjects = new List<Bubble> ();
 		for (int i = 0; i < BubbleCount; i++) {
-			string j = (i / 3 < 4) ? "" + i/3 : "";
+			string j = (i / 3 < 4) ? "" + i / 3 : "";
 			bubbleObjects.Add(new Bubble (j, new Vector2 ((float)(Random.value * canvasDimensions.width - canvasDimensions.width / 2), (float)(Random.value * canvasDimensions.height * -2 - canvasDimensions.height / 2)), new Vector2 ((float)(Random.value * 5 - 2.5), (float)(Random.value * 4 + 1)), canvas, (int) (Random.value * 3 + 7)));
 			bubbles.Add(bubbleObjects[i].bubble);
 		}
@@ -226,6 +233,7 @@ public class Game : MonoBehaviour {
 
 		if (bubbleObjects [currentIndex].MatchingID.Equals ("")) {
 			bubbles [currentIndex].GetComponent<SpriteRenderer> ().color = Color.red;
+			audioSource.PlayOneShot ((AudioClip)popSounds [(int)(Random.value * popSounds.Length)]);
 		} else {
 			bubbles [currentIndex].GetComponent<SpriteRenderer> ().color = Color.green;
 		}
