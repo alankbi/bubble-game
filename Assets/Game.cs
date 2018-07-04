@@ -43,7 +43,6 @@ public class Game : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		Debug.Log (buttonColor);
 		canvasDimensions = canvas.GetComponent<RectTransform> ().rect;
 
 		audioSource = GetComponent<AudioSource> ();
