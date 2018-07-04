@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Bubble {
 	
-	public string MatchingID { get; private set; }
+	public string Sprite { get; private set; }
 
 	public float Period { get; private set; }
 
@@ -12,9 +12,9 @@ public class Bubble {
 
 	public GameObject bubble { get; set; }
 
-	public Bubble(string matchingID, Vector2 pos, Vector2 vel, Transform canvas, int divideBySize)
+	public Bubble(string sprite, Vector2 pos, Vector2 vel, Transform canvas, int divideBySize)
 	{
-		MatchingID = matchingID;
+		Sprite = sprite;
 
 		var bubble = new GameObject ();
 		bubble.transform.SetParent (canvas);
@@ -26,14 +26,15 @@ public class Bubble {
 		rigidbody.velocity = vel;
 
 		var canvasDimensions = canvas.GetComponent<RectTransform> ().rect;
-		rigidbody.transform.localScale = new Vector2 (canvasDimensions.height / divideBySize, canvasDimensions.height / divideBySize);
+		rigidbody.transform.localScale = 
+			new Vector2 (canvasDimensions.height / divideBySize, canvasDimensions.height / divideBySize);
 
 		bubble.AddComponent<CircleCollider2D> ();
 		bubble.layer = 0;
 		Physics2D.IgnoreLayerCollision (0, 0);
 
 		var spriteRenderer = bubble.AddComponent<SpriteRenderer>();
-		spriteRenderer.sprite = Resources.Load<Sprite>("Bubble" + matchingID);
+		spriteRenderer.sprite = Resources.Load<Sprite>("BubbleSprites/" + sprite);
 
 		this.bubble = bubble;
 

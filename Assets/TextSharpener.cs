@@ -11,16 +11,20 @@ public class TextSharpener : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		foreach (var t in text) {
-			t.fontSize *= Scale;
-			t.transform.localScale /= Scale;
-
-			t.horizontalOverflow = HorizontalWrapMode.Overflow;
-			t.verticalOverflow = VerticalWrapMode.Overflow;
+			SharpenText (t);
 		}
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		
+	}
+
+	public static void SharpenText(Text t) {
+		t.fontSize *= Scale;
+		t.transform.localScale /= Scale;
+
+		t.horizontalOverflow = HorizontalWrapMode.Overflow;
+		t.verticalOverflow = VerticalWrapMode.Overflow;
 	}
 }
