@@ -29,15 +29,13 @@ public class Game : MonoBehaviour {
 	private const int BubbleCount = 60;
 	private const int RealBubbleCount = 12;
 
-	private GameObject gameOverText;
-	private GameObject yesButton;
-	private GameObject noButton;
+	public GameObject[] gameOverButtons;
 
 	private GameObject test;
 	private float time;
 
 	private AudioSource audioSource;
-	private Object[] popSounds;
+	private SoundPlayer soundPlayer;
 
 	private readonly Color buttonColor = new Color (249, 123, 40, 255);
 
@@ -46,13 +44,15 @@ public class Game : MonoBehaviour {
 		canvasDimensions = canvas.GetComponent<RectTransform> ().rect;
 
 		audioSource = GetComponent<AudioSource> ();
-		popSounds = Resources.LoadAll ("Sounds/BubblePop", typeof(AudioClip));
+		soundPlayer = new SoundPlayer (audioSource);
 
 		bubbles = new List<GameObject>();
 		bubbleObjects = new List<Bubble> ();
 
 		for (int i = 0; i < BubbleCount; i++) {
-			string sprite = (i / 3 < 4) ? "Object" + i / 3 : "Bubble";
+			string sprite = (i / 3 < 4) ? "Object" + i / 3 : "Bubble"; // TESTING PURPOSES, DELETE WHEN DONE
+			//string sprite = (i < RealBubbleCount) ? "Object" + i : "Bubble";
+
 			bubbleObjects.Add(new Bubble (sprite, 
 				new Vector2 ((float)(Random.value * canvasDimensions.width - canvasDimensions.width / 2), 
 					(float)(Random.value * canvasDimensions.height * -2 - canvasDimensions.height / 2)), 
@@ -72,6 +72,11 @@ public class Game : MonoBehaviour {
 		isGameOver = false;
 
 		poppedPosition = -canvasDimensions.width / 2 + canvasDimensions.width / BubbleCount;
+
+		foreach (GameObject button in gameOverButtons) {
+			TextSharpener.SharpenText (button.GetComponentInChildren<Text> ());
+			button.SetActive (false);
+		}
 	}
 	
 	// Update is called once per frame
@@ -100,7 +105,9 @@ public class Game : MonoBehaviour {
 				isGameOver = false;
 				bubbleObjects.Add (null);
 
-				ConstructGameOverScreen ();
+				foreach (GameObject button in gameOverButtons) {
+					button.SetActive (true);
+				}
 			}
 		}
 	}
@@ -113,7 +120,7 @@ public class Game : MonoBehaviour {
 				hit = Physics2D.Raycast (ray.origin, ray.direction);
 				if (hit) {
 					var bubble = hit.transform.gameObject;
-					HandleInteraction (bubble);
+					HandleClickStart (bubble);
 				}
 			}
 		}
@@ -124,7 +131,7 @@ public class Game : MonoBehaviour {
 			if (hit) {
 				var bubble = hit.transform.gameObject;
 				if (!clickOccurred) {
-					HandleInteraction (bubble);
+					HandleClickStart (bubble);
 				}
 			}
 		}
@@ -140,14 +147,14 @@ public class Game : MonoBehaviour {
 			}
 			testBody.velocity = vel;
 
-			if (bubbles[i].transform.localPosition.y > canvasDimensions.height / 2) {
+			if (bubbles[i].transform.localPosition.y > canvasDimensions.height / 2 + 20) {
 				bubbles[i].transform.localPosition = 
 					new Vector2 ((float)(Random.value * canvasDimensions.width - canvasDimensions.width / 2), -5 * canvasDimensions.height / 2);
 			}
 		}
 	}
 
-	void HandleInteraction(GameObject bubble) {
+	void HandleClickStart(GameObject bubble) {
 		bool found = false;
 		for (int i = 0; i < bubbles.Count; i++) {
 			if (bubble == bubbles[i]) {
@@ -167,7 +174,7 @@ public class Game : MonoBehaviour {
 
 		if (bubbleObjects [currentIndex].Sprite.Equals ("Bubble")) {
 			bubbles [currentIndex].GetComponent<SpriteRenderer> ().color = Color.red;
-			audioSource.PlayOneShot ((AudioClip)popSounds [(int)(Random.value * popSounds.Length)]);
+			soundPlayer.PlayPopSound();
 		} else {
 			bubbles [currentIndex].GetComponent<SpriteRenderer> ().color = Color.green;
 		}
@@ -189,62 +196,10 @@ public class Game : MonoBehaviour {
 			var rb = bubbles [currentIndex].GetComponent<Rigidbody2D> ();
 			rb.velocity = new Vector2 ((float)(Random.value * 5 - 2.5), (float)(Random.value * 4 + 1));
 		}
+
+		if (bubbleObjects.Count == BubbleCount - RealBubbleCount) { // Last object found
+			soundPlayer.PlayCorrectAnswerSounds ();
+		}
 		currentIndex = -1;
-	}
-
-	void ConstructGameOverScreen() {
-		gameOverText = new GameObject ();
-		gameOverText.transform.SetParent (canvas);
-		gameOverText.transform.localPosition = new Vector2 (0, 80);
-		gameOverText.transform.localScale = new Vector3 (1, 1, 1);
-
-		var text = gameOverText.AddComponent<Text> ();
-		text.text = "Play Again?";
-		text.color = buttonColor;
-		text.fontSize = 24;
-		text.font = (Font) Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
-		text.alignment = TextAnchor.MiddleCenter;
-		TextSharpener.SharpenText (text);
-
-		var rect = gameOverText.GetComponent<RectTransform> ();
-		rect.sizeDelta = new Vector2 (200, 100);
-
-		yesButton = new GameObject ();
-		yesButton.transform.SetParent (canvas);
-		yesButton.transform.localPosition = new Vector2 (0, 0);
-		yesButton.transform.localScale = new Vector3 (1, 1, 1);
-
-		var button = yesButton.AddComponent<Button> ();
-		button.onClick.AddListener(() => SceneManager.LoadScene (1));
-
-		text = yesButton.AddComponent<Text> ();
-		text.text = "Yes";
-		text.color = buttonColor;
-		text.fontSize = 21;
-		text.font = (Font) Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
-		text.alignment = TextAnchor.MiddleCenter;
-		TextSharpener.SharpenText (text);
-
-		rect = yesButton.GetComponent<RectTransform> ();
-		rect.sizeDelta = new Vector2 (200, 100);
-
-		noButton = new GameObject ();
-		noButton.transform.SetParent (canvas);
-		noButton.transform.localPosition = new Vector2 (0, -80);
-		noButton.transform.localScale = new Vector3 (1, 1, 1);
-
-		button = noButton.AddComponent<Button> ();
-		button.onClick.AddListener(() => SceneManager.LoadScene (0));
-
-		text = noButton.AddComponent<Text> ();
-		text.text = "No";
-		text.color = buttonColor;
-		text.fontSize = 21;
-		text.font = (Font) Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
-		text.alignment = TextAnchor.MiddleCenter;
-		TextSharpener.SharpenText (text);
-
-		rect = noButton.GetComponent<RectTransform> ();
-		rect.sizeDelta = new Vector2 (200, 100);
 	}
 }

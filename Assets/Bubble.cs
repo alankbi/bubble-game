@@ -12,8 +12,7 @@ public class Bubble {
 
 	public GameObject bubble { get; set; }
 
-	public Bubble(string sprite, Vector2 pos, Vector2 vel, Transform canvas, int divideBySize)
-	{
+	public Bubble(string sprite, Vector2 pos, Vector2 vel, Transform canvas, int divideBySize) {
 		Sprite = sprite;
 
 		var bubble = new GameObject ();
