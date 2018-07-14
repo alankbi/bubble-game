@@ -38,7 +38,7 @@ public class Bubble {
 		this.bubble = bubble;
 
 		Period = Random.value * 8;
-		Amplitude = Random.value * rigidbody.velocity.y;
+		Amplitude = Random.value * Mathf.Min(rigidbody.velocity.y, 5);
 
 	}
 }
