@@ -12,7 +12,7 @@ public class Bubble {
 
 	public GameObject bubble { get; set; }
 
-	public Bubble(string sprite, Vector2 pos, Vector2 vel, Transform canvas, int divideBySize) {
+	public Bubble(string sprite, Vector3 pos, Vector2 vel, Transform canvas, int divideBySize) {
 		Sprite = sprite;
 
 		var bubble = new GameObject ();
@@ -37,7 +37,7 @@ public class Bubble {
 
 		this.bubble = bubble;
 
-		Period = Random.value * 8;
+		Period = Random.value * 4;
 		Amplitude = Random.value * Mathf.Min(rigidbody.velocity.y, 5);
 
 	}

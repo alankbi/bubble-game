@@ -9,6 +9,9 @@ public class SoundPlayer {
 	private Object[] correctAnswerSounds;
 	private Object[] gameOverSounds;
 	private Object startSound;
+	private Object bubblingSound;
+
+	private int index;
 
 	public SoundPlayer(AudioSource audioSource) {
 		this.audioSource = audioSource; 
@@ -16,14 +19,21 @@ public class SoundPlayer {
 		correctAnswerSounds = Resources.LoadAll ("Sounds/CorrectAnswer", typeof(AudioClip));
 		gameOverSounds = Resources.LoadAll ("Sounds/GameOver", typeof(AudioClip));
 		startSound = Resources.Load ("Sounds/start", typeof(AudioClip));
+		bubblingSound = Resources.Load ("Sounds/BackgroundBubbling/bubbling_long", typeof(AudioClip));
+
+		index = 0;
 	}
 
-	public void PlayPopSound() {
-		audioSource.PlayOneShot ((AudioClip)popSounds [(int)(Random.value * popSounds.Length)]);
+	public void PlayPopSound(float volume) {
+		audioSource.PlayOneShot ((AudioClip)popSounds [(int)(Random.value * popSounds.Length)], volume);
 	}
 
 	public void PlayCorrectAnswerSounds() {
-		audioSource.PlayOneShot ((AudioClip)correctAnswerSounds [(int)(Random.value * correctAnswerSounds.Length)]);
+		if (index >= correctAnswerSounds.Length) {
+			index = 0;
+			Shuffle(correctAnswerSounds);
+		}
+		audioSource.PlayOneShot ((AudioClip)correctAnswerSounds [index++]);
 	}
 
 	public void PlayGameOverSounds() {
@@ -32,5 +42,19 @@ public class SoundPlayer {
 
 	public void PlayStartSound() {
 		audioSource.PlayOneShot ((AudioClip)startSound);
+	}
+
+	public void PlayBackgroundBubbling() {
+		audioSource.PlayOneShot ((AudioClip)bubblingSound);
+	}
+
+	private void Shuffle(Object[] array) {
+		int size = array.Length;
+		while (size > 1) {
+			int k = Random.Range(0, size--);
+			Object temp = array[size];
+			array[size] = array[k];
+			array[k] = temp;
+		}
 	}
 }
