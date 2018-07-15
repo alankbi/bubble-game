@@ -37,7 +37,10 @@ public class Game : MonoBehaviour {
 	private AudioSource audioSource;
 	private SoundPlayer soundPlayer;
 
-	private readonly Color buttonColor = new Color (249, 123, 40, 255);
+	private readonly Color TextColor = new Color (249f / 255, 123f / 255, 40f / 255, 1f);
+
+	public Text instructions;
+	public GameObject tuffy;
 
 	// Use this for initialization
 	void Start () {
@@ -81,6 +84,10 @@ public class Game : MonoBehaviour {
 		}
 
 		soundPlayer.PlayBackgroundBubbling ();
+
+		float tuffyXOffset = tuffy.GetComponent<RectTransform> ().rect.width * tuffy.transform.localScale.x * 7 / 10;
+		Debug.Log (tuffy.GetComponent<RectTransform> ().rect.width);
+		tuffy.transform.localPosition = new Vector2(canvasDimensions.width / 2 + tuffyXOffset, 0);
 	}
 	
 	// Update is called once per frame
@@ -112,6 +119,8 @@ public class Game : MonoBehaviour {
 				foreach (GameObject button in gameOverButtons) {
 					button.SetActive (true);
 				}
+
+				StartCoroutine(AnimateTuffy ());
 			}
 		}
 	}
@@ -190,6 +199,8 @@ public class Game : MonoBehaviour {
 		}
 
 		clickOccurred = true;
+
+		StartCoroutine (FadeInstructions());
 	}
 
 	void HandleClickOver() {
@@ -200,7 +211,8 @@ public class Game : MonoBehaviour {
 
 			clickedObject.transform.localScale /= 1.2f;
 			var scale = clickedObject.transform.localScale;
-			clickedObject.transform.localPosition = new Vector3(poppedPosition + scale.x / 2 + 10, -canvasDimensions.height / 2 + scale.y / 2 + 10, -0.01f);
+			clickedObject.transform.localPosition = 
+				new Vector3(poppedPosition + scale.x / 2 + 10, -canvasDimensions.height / 2 + scale.y / 2 + 10, -0.01f);
 			clickedObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
 			Destroy (clickedObject.GetComponent<Collider2D> ());
 
@@ -226,6 +238,24 @@ public class Game : MonoBehaviour {
 			return randomNormal (mean, stdDev, min, max);
 		} else {
 			return randNum;
+		}
+	}
+
+	IEnumerator FadeInstructions() {
+		if (instructions.color.a == 1) {
+			for (float i = 1; i >= 0; i -= Time.deltaTime) {
+				instructions.color = new Color (TextColor.r, TextColor.g, TextColor.b, i);
+				yield return null;
+			}
+		}
+	}
+
+	IEnumerator AnimateTuffy() {
+		int width = (int) (tuffy.GetComponent<RectTransform> ().rect.width * tuffy.transform.localScale.x);
+		for (int i = 0; i < width; i++) {
+			var pos = tuffy.transform.localPosition;
+			tuffy.transform.localPosition = new Vector2 (pos.x - 1, pos.y);
+			yield return null;
 		}
 	}
 }
