@@ -45,7 +45,7 @@ public class SoundPlayer {
 	}
 
 	public void PlayBackgroundBubbling() {
-		audioSource.PlayOneShot ((AudioClip)bubblingSound);
+		audioSource.Play ();
 	}
 
 	private void Shuffle(Object[] array) {

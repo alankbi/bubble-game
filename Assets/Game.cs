@@ -86,7 +86,6 @@ public class Game : MonoBehaviour {
 		soundPlayer.PlayBackgroundBubbling ();
 
 		float tuffyXOffset = tuffy.GetComponent<RectTransform> ().rect.width * tuffy.transform.localScale.x * 7 / 10;
-		Debug.Log (tuffy.GetComponent<RectTransform> ().rect.width);
 		tuffy.transform.localPosition = new Vector2(canvasDimensions.width / 2 + tuffyXOffset, 0);
 	}
 	

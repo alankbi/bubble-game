@@ -37,6 +37,8 @@ public class Main : MonoBehaviour {
 				(int) (Random.value * 5 + 6)));
 			bubbles.Add(bubbleObjects[i].bubble);
 		}
+
+		soundPlayer.PlayBackgroundBubbling ();
 	}
 	
 	// Update is called once per frame
