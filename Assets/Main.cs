@@ -22,8 +22,8 @@ public class Main : MonoBehaviour {
 		time = 0;
 
 		audioSource = GetComponent<AudioSource> ();
-		soundPlayer = new SoundPlayer(audioSource);
-		soundPlayer.PlayStartSound ();
+		//soundPlayer = new SoundPlayer(audioSource);
+		SoundPlayer.PlayStartSound ();
 
 		bubbles = new List<GameObject>();
 		bubbleObjects = new List<Bubble> ();
@@ -37,8 +37,8 @@ public class Main : MonoBehaviour {
 				(int) (Random.value * 5 + 6)));
 			bubbles.Add(bubbleObjects[i].bubble);
 		}
-
-		soundPlayer.PlayBackgroundBubbling ();
+		SoundPlayer.PlayBackgroundBubbling ();
+		//soundPlayer.PlayBackgroundBubbling ();
 	}
 	
 	// Update is called once per frame

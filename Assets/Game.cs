@@ -47,7 +47,7 @@ public class Game : MonoBehaviour {
 		canvasDimensions = canvas.GetComponent<RectTransform> ().rect;
 
 		audioSource = GetComponent<AudioSource> ();
-		soundPlayer = new SoundPlayer (audioSource);
+		//soundPlayer = new SoundPlayer (audioSource);
 
 		bubbles = new List<GameObject>();
 		bubbleObjects = new List<Bubble> ();
@@ -83,7 +83,7 @@ public class Game : MonoBehaviour {
 			button.SetActive (false);
 		}
 
-		soundPlayer.PlayBackgroundBubbling ();
+		//soundPlayer.PlayBackgroundBubbling ();
 
 		float tuffyXOffset = tuffy.GetComponent<RectTransform> ().rect.width * tuffy.transform.localScale.x * 7 / 10;
 		tuffy.transform.localPosition = new Vector2(canvasDimensions.width / 2 + tuffyXOffset, 0);
@@ -186,13 +186,13 @@ public class Game : MonoBehaviour {
 
 		if (bubbleObjects [currentIndex].Sprite.Equals ("Bubble")) {
 			bubbles [currentIndex].GetComponent<SpriteRenderer> ().color = Color.red;
-			soundPlayer.PlayPopSound(1);
+			//soundPlayer.PlayPopSound(1);
 		} else {
 			bubbles [currentIndex].GetComponent<SpriteRenderer> ().color = Color.green;
 			if (touchCount % 2 == 0 && bubbleObjects.Count - 1 != BubbleCount - RealBubbleCount) {
-				soundPlayer.PlayCorrectAnswerSounds ();
+				//soundPlayer.PlayCorrectAnswerSounds ();
 			} else {
-				soundPlayer.PlayPopSound(1);
+				//soundPlayer.PlayPopSound(1);
 			}
 			touchCount++;
 		}
@@ -223,7 +223,7 @@ public class Game : MonoBehaviour {
 		}
 
 		if (bubbleObjects.Count == BubbleCount - RealBubbleCount) { // Last object found
-			soundPlayer.PlayGameOverSounds ();
+			//soundPlayer.PlayGameOverSounds ();
 		}
 		currentIndex = -1;
 	}
