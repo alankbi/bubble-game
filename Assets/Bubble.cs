@@ -28,7 +28,10 @@ public class Bubble {
 		rigidbody.transform.localScale = 
 			new Vector2 (canvasDimensions.height / divideBySize, canvasDimensions.height / divideBySize);
 
-		bubble.AddComponent<CircleCollider2D> ();
+		var collider = bubble.AddComponent<CircleCollider2D> ();
+		if (sprite.Contains ("Item")) {
+			collider.radius *= 10;
+		}
 		bubble.layer = 0;
 		Physics2D.IgnoreLayerCollision (0, 0);
 

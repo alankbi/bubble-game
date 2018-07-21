@@ -60,13 +60,11 @@ public class Game : MonoBehaviour {
 
 		itemIndex = (int)(Random.value * items.Length);
 		RealBubbleCount = (itemIndex == 1) ? RocketPartCount : DefaultPartCount;
-		Debug.Log (itemIndex + " " + RealBubbleCount);
 
 		int tempCount = 0;
 		for (int i = 0; i < items.Length; i++) {
 			for (int j = 0; j < (i == 1 ? RocketPartCount : DefaultPartCount); j++) {
 				string sprite = "Item" + (i + 1) + "/Part" + (j + 1);
-				Debug.Log (sprite);
 				int divideBySize = 100;
 				var pos = new Vector3 ((float)(Random.value * canvasDimensions.width - canvasDimensions.width / 2), 
 					         (float)(Random.value * canvasDimensions.height * -2 - canvasDimensions.height / 2), 
@@ -214,10 +212,7 @@ public class Game : MonoBehaviour {
 		var rb = bubbles [currentIndex].GetComponent<Rigidbody2D> ();
 		rb.velocity = new Vector2(0, 0);
 
-		if (bubbleObjects [currentIndex].Sprite.Equals ("Bubble")) {
-			bubbles [currentIndex].GetComponent<SpriteRenderer> ().color = Color.red;
-			soundPlayer.PlayPopSound(1);
-		} else {
+		if (bubbleObjects [currentIndex].Sprite.Contains ("Item" + (itemIndex + 1))) {
 			bubbles [currentIndex].GetComponent<SpriteRenderer> ().color = Color.green;
 			if (touchCount % 2 == 0 && bubbleObjects.Count - 1 != BubbleCount - RealBubbleCount) {
 				soundPlayer.PlayCorrectAnswerSounds ();
@@ -225,7 +220,10 @@ public class Game : MonoBehaviour {
 				soundPlayer.PlayPopSound(1);
 			}
 			touchCount++;
-		}
+		} else {
+			bubbles [currentIndex].GetComponent<SpriteRenderer> ().color = Color.red;
+			soundPlayer.PlayPopSound(1);
+		} 
 
 		clickOccurred = true;
 
@@ -233,7 +231,7 @@ public class Game : MonoBehaviour {
 	}
 
 	void HandleClickOver() {
-		if (!bubbleObjects[currentIndex].Sprite.Equals("Bubble")) {
+		if (bubbleObjects [currentIndex].Sprite.Contains ("Item" + (itemIndex + 1))) {
 			var clickedObject = bubbles [currentIndex];
 			bubbles.Remove (clickedObject);
 			bubbleObjects.RemoveAt (currentIndex);
