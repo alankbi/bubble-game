@@ -27,7 +27,7 @@ public class Game : MonoBehaviour {
 	private float poppedPosition;
 
 	private const int BubbleCount = 360;
-	private const int RealBubbleCount = 12;
+	private int RealBubbleCount;
 
 	public GameObject[] gameOverButtons;
 
@@ -42,6 +42,12 @@ public class Game : MonoBehaviour {
 	public Text instructions;
 	public GameObject tuffy;
 
+	public GameObject[] items;
+	private int itemIndex;
+
+	private const int DefaultPartCount = 4;
+	private const int RocketPartCount = 5;
+
 	// Use this for initialization
 	void Start () {
 		canvasDimensions = canvas.GetComponent<RectTransform> ().rect;
@@ -52,12 +58,36 @@ public class Game : MonoBehaviour {
 		bubbles = new List<GameObject>();
 		bubbleObjects = new List<Bubble> ();
 
-		for (int i = 0; i < BubbleCount; i++) {
-			string sprite = (i < RealBubbleCount) ? "Object" + (i / 3) : "Bubble"; // Get rid of i / 3 later
-			int divideBySize = (i < RealBubbleCount) ? 9 : (int) (Random.value * 5 + 6);
+		itemIndex = (int)(Random.value * items.Length);
+		RealBubbleCount = (itemIndex == 1) ? RocketPartCount : DefaultPartCount;
+		Debug.Log (itemIndex + " " + RealBubbleCount);
+
+		int tempCount = 0;
+		for (int i = 0; i < items.Length; i++) {
+			for (int j = 0; j < (i == 1 ? RocketPartCount : DefaultPartCount); j++) {
+				string sprite = "Item" + (i + 1) + "/Part" + (j + 1);
+				Debug.Log (sprite);
+				int divideBySize = 100;
+				var pos = new Vector3 ((float)(Random.value * canvasDimensions.width - canvasDimensions.width / 2), 
+					         (float)(Random.value * canvasDimensions.height * -2 - canvasDimensions.height / 2), 
+					         -0.0001f);
+
+				bubbleObjects.Add (new Bubble (sprite, 
+					pos, 
+					new Vector2 ((float)(Random.value * 5 - 2.5), randomNormal (3,  2, 1, 7)), 
+					canvas, 
+					divideBySize));
+				bubbles.Add (bubbleObjects [tempCount].bubble);
+				tempCount++;
+			}
+		}
+
+		for (int i = tempCount; i < BubbleCount; i++) {
+			string sprite = "Bubble"; 
+			int divideBySize = (int) (Random.value * 5 + 6);
 			var pos = new Vector3 ((float)(Random.value * canvasDimensions.width - canvasDimensions.width / 2), 
 				(float)(Random.value * canvasDimensions.height * -2 - canvasDimensions.height / 2), 
-				(i < RealBubbleCount) ? -0.0001f : 0);
+				0);
 
 			bubbleObjects.Add(new Bubble (sprite, 
 				pos, 
