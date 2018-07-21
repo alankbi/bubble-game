@@ -10,8 +10,10 @@ public class SoundPlayer {
 	private Object[] gameOverSounds;
 	private Object startSound;
 	private Object bubblingSound;
+	private Object[] backgroundMusic;
 
 	private int index;
+	private int backgroundMusicIndex;
 
 	public SoundPlayer(AudioSource audioSource) {
 		this.audioSource = audioSource; 
@@ -20,8 +22,13 @@ public class SoundPlayer {
 		gameOverSounds = Resources.LoadAll ("Sounds/GameOver", typeof(AudioClip));
 		startSound = Resources.Load ("Sounds/start", typeof(AudioClip));
 		bubblingSound = Resources.Load ("Sounds/BackgroundBubbling/bubbling_long", typeof(AudioClip));
+		backgroundMusic = Resources.LoadAll ("Sounds/BackgroundMusic", typeof(AudioClip));
+
+		Shuffle (correctAnswerSounds);
+		Shuffle (backgroundMusic);
 
 		index = 0;
+		backgroundMusicIndex = 0;
 	}
 
 	public void PlayPopSound(float volume) {
@@ -46,6 +53,7 @@ public class SoundPlayer {
 
 	public void PlayBackgroundBubbling() {
 		audioSource.Play ();
+		PlayBackgroundMusic ();
 	}
 
 	private void Shuffle(Object[] array) {
@@ -56,5 +64,14 @@ public class SoundPlayer {
 			array[size] = array[k];
 			array[k] = temp;
 		}
+	}
+
+	public void PlayBackgroundMusic() {
+		if (backgroundMusicIndex >= backgroundMusic.Length) {
+			backgroundMusicIndex = 0;
+			Shuffle (backgroundMusic);
+		}
+		var clip = (AudioClip)backgroundMusic [backgroundMusicIndex++];
+		audioSource.PlayOneShot (clip, 0.4f);
 	}
 }
