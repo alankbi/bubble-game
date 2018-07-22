@@ -44,6 +44,7 @@ public class Game : MonoBehaviour {
 
 	public GameObject[] items;
 	private int itemIndex;
+	private float itemYPos;
 
 	private const int DefaultPartCount = 4;
 	private const int RocketPartCount = 5;
@@ -60,38 +61,35 @@ public class Game : MonoBehaviour {
 
 		itemIndex = (int)(Random.value * items.Length);
 		RealBubbleCount = (itemIndex == 1) ? RocketPartCount : DefaultPartCount;
+		itemYPos = items [itemIndex].transform.localPosition.y;
+
+		for (int i = 0; i < items.Length; i++) {
+			if (i == itemIndex) {
+
+			} else {
+				items [i].SetActive (false);
+			}
+		}
 
 		int tempCount = 0;
 		for (int i = 0; i < items.Length; i++) {
-			for (int j = 0; j < (i == 1 ? RocketPartCount : DefaultPartCount); j++) {
+			for (int j = 1; j < (i == 1 ? RocketPartCount : DefaultPartCount); j++) {
 				string sprite = "Item" + (i + 1) + "/Part" + (j + 1);
 				int divideBySize = 100;
-				var pos = new Vector3 ((float)(Random.value * canvasDimensions.width - canvasDimensions.width / 2), 
-					         (float)(Random.value * canvasDimensions.height * -2 - canvasDimensions.height / 2), 
-					         -0.0001f);
-
-				bubbleObjects.Add (new Bubble (sprite, 
-					pos, 
-					new Vector2 ((float)(Random.value * 5 - 2.5), randomNormal (3,  2, 1, 7)), 
-					canvas, 
-					divideBySize));
+				CreateBubble (sprite, divideBySize);
 				bubbles.Add (bubbleObjects [tempCount].bubble);
 				tempCount++;
 			}
 		}
 
+		CreateBubble ("Item1/Part1", 100); // Box part that's shared
+		bubbles.Add (bubbleObjects [tempCount].bubble);
+		tempCount++;
+
 		for (int i = tempCount; i < BubbleCount; i++) {
 			string sprite = "Bubble"; 
 			int divideBySize = (int) (Random.value * 5 + 6);
-			var pos = new Vector3 ((float)(Random.value * canvasDimensions.width - canvasDimensions.width / 2), 
-				(float)(Random.value * canvasDimensions.height * -2 - canvasDimensions.height / 2), 
-				0);
-
-			bubbleObjects.Add(new Bubble (sprite, 
-				pos, 
-				new Vector2 ((float)(Random.value * 5 - 2.5), randomNormal(3, 2, 1, 7)), 
-				canvas, 
-				divideBySize));
+			CreateBubble (sprite, divideBySize);
 			bubbles.Add(bubbleObjects[i].bubble);
 		}
 
@@ -152,6 +150,20 @@ public class Game : MonoBehaviour {
 		}
 	}
 
+	void CreateBubble(string sprite, int divideBySize) {
+		var pos = new Vector3 ((float)(Random.value * canvasDimensions.width - canvasDimensions.width / 2), 
+			(float)(Random.value * canvasDimensions.height * -2 - canvasDimensions.height / 2), 
+			sprite.Contains("Item") ? -0.0001f : 0.01f);
+
+		int maxYSpeed = sprite.Contains ("Item") ? 7 : 10;
+
+		bubbleObjects.Add (new Bubble (sprite, 
+			pos, 
+			new Vector2 ((float)(Random.value * 5 - 2.5), randomNormal (3,  2, 1, maxYSpeed)), 
+			canvas, 
+			divideBySize));
+	}
+
 	void CheckClicks() {
 		var hit = new RaycastHit2D();
 		for (int i = 0; i < Input.touchCount; i++) {
@@ -194,6 +206,8 @@ public class Game : MonoBehaviour {
 						bubbles[i].transform.localPosition.z);
 			}
 		}
+		items [itemIndex].transform.localPosition = 
+			new Vector3 (items [itemIndex].transform.localPosition.x, itemYPos + 5 * Mathf.Sin (time), -0.01f);
 	}
 
 	void HandleClickStart(GameObject bubble) {
@@ -212,7 +226,8 @@ public class Game : MonoBehaviour {
 		var rb = bubbles [currentIndex].GetComponent<Rigidbody2D> ();
 		rb.velocity = new Vector2(0, 0);
 
-		if (bubbleObjects [currentIndex].Sprite.Contains ("Item" + (itemIndex + 1))) {
+		var sprite = bubbleObjects [currentIndex].Sprite;
+		if (sprite.Contains ("Item" + (itemIndex + 1)) || sprite.Equals ("Item1/Part1")) {
 			bubbles [currentIndex].GetComponent<SpriteRenderer> ().color = Color.green;
 			if (touchCount % 2 == 0 && bubbleObjects.Count - 1 != BubbleCount - RealBubbleCount) {
 				soundPlayer.PlayCorrectAnswerSounds ();
@@ -231,7 +246,8 @@ public class Game : MonoBehaviour {
 	}
 
 	void HandleClickOver() {
-		if (bubbleObjects [currentIndex].Sprite.Contains ("Item" + (itemIndex + 1))) {
+		var sprite = bubbleObjects [currentIndex].Sprite;
+		if (sprite.Contains ("Item" + (itemIndex + 1)) || sprite.Equals ("Item1/Part1")) {
 			var clickedObject = bubbles [currentIndex];
 			bubbles.Remove (clickedObject);
 			bubbleObjects.RemoveAt (currentIndex);
@@ -239,11 +255,14 @@ public class Game : MonoBehaviour {
 			clickedObject.transform.localScale /= 1.2f;
 			var scale = clickedObject.transform.localScale;
 			clickedObject.transform.localPosition = 
-				new Vector3(poppedPosition + scale.x / 2 + 10, -canvasDimensions.height / 2 + scale.y / 2 + 10, -0.01f);
+				new Vector3(1000 + poppedPosition + scale.x / 2 + 10, -canvasDimensions.height / 2 + scale.y / 2 + 10, -0.01f);
 			clickedObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
 			Destroy (clickedObject.GetComponent<Collider2D> ());
 
 			poppedPosition += canvasDimensions.width / (RealBubbleCount) - 20 / RealBubbleCount;
+
+			var part = items [itemIndex].transform.Find ("Part" + sprite [sprite.Length - 1]).gameObject;
+			part.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, 1f);
 		} else {
 			bubbles [currentIndex].GetComponent<SpriteRenderer> ().color = Color.white;
 			var rb = bubbles [currentIndex].GetComponent<Rigidbody2D> ();
