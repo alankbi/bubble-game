@@ -88,7 +88,7 @@ public class Game : MonoBehaviour {
 
 		for (int i = tempCount; i < BubbleCount; i++) {
 			string sprite = "Bubble"; 
-			int divideBySize = (int) (Random.value * 5 + 6);
+			int divideBySize = (int)randomNormal (8, 3, 6, 12); //(int) (Random.value * 5 + 6);
 			CreateBubble (sprite, divideBySize);
 			bubbles.Add(bubbleObjects[i].bubble);
 		}
@@ -207,7 +207,7 @@ public class Game : MonoBehaviour {
 			}
 		}
 		items [itemIndex].transform.localPosition = 
-			new Vector3 (items [itemIndex].transform.localPosition.x, itemYPos + 5 * Mathf.Sin (time), -0.01f);
+			new Vector3 (items [itemIndex].transform.localPosition.x, itemYPos + 15 * Mathf.Sin (time), -0.01f);
 	}
 
 	void HandleClickStart(GameObject bubble) {
