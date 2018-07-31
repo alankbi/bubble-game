@@ -49,6 +49,8 @@ public class Game : MonoBehaviour {
 	private const int DefaultPartCount = 4;
 	private const int RocketPartCount = 5;
 
+	private int collectedPartsCount;
+
 	private List<GameObject> moreBubbles;
 
 	// Use this for initialization
@@ -64,6 +66,7 @@ public class Game : MonoBehaviour {
 
 		itemIndex = (int)(Random.value * items.Length);
 		RealBubbleCount = (itemIndex == 1) ? RocketPartCount : DefaultPartCount;
+		collectedPartsCount = 0;
 		itemYPos = items [itemIndex].transform.localPosition.y;
 
 		for (int i = 0; i < items.Length; i++) {
@@ -122,19 +125,7 @@ public class Game : MonoBehaviour {
 	void Update () {
 		CheckClicks ();
 
-		/*HandleBubbleMotion ();
-
-		if (clickOccurred) {
-			timeElapsed += Time.deltaTime;
-
-			if (timeElapsed >= 1) {
-				timeElapsed = 0;
-				clickOccurred = false;
-				HandleClickOver ();
-			}
-		}
-
-		isGameOver = (bubbleObjects.Count == BubbleCount - RealBubbleCount);
+		isGameOver = (collectedPartsCount == RealBubbleCount);
 
 		if (isGameOver) {
 			timeElapsed += Time.deltaTime;
@@ -142,15 +133,16 @@ public class Game : MonoBehaviour {
 			if (timeElapsed >= 1) {
 				timeElapsed = 0;
 				isGameOver = false;
-				bubbleObjects.Add (null);
+				collectedPartsCount += 10; // to stop GameOver triggering more than once
 
 				foreach (GameObject button in gameOverButtons) {
 					button.SetActive (true);
 				}
 
+				soundPlayer.PlayGameOverSounds ();
 				StartCoroutine(AnimateTuffy ());
 			}
-		}*/
+		}
 	}
 
 	Bubble CreateBubble(string sprite, int divideBySize) {
@@ -221,11 +213,11 @@ public class Game : MonoBehaviour {
 			}
 		}
 
-		var rb = bubbles [currentIndex].GetComponent<Rigidbody2D> ();
+		var rb = bubble.GetComponent<Rigidbody2D> ();
 
 		var sprite = bubbleObjects [currentIndex].Sprite;
 		if (sprite.Contains ("Item" + (itemIndex + 1)) || sprite.Equals ("Item1/Part1")) { // Correct
-			if (touchCount % 2 == 0 && bubbleObjects.Count - 1 != BubbleCount - RealBubbleCount) {
+			if (touchCount % 2 == 0 && collectedPartsCount + 1 != RealBubbleCount) {
 				soundPlayer.PlayCorrectAnswerSounds ();
 			} else {
 				soundPlayer.PlayPopSound(1);
@@ -240,13 +232,17 @@ public class Game : MonoBehaviour {
 			part.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, 1f);
 
 			touchCount++;
+			collectedPartsCount++;
 		} else {
 			soundPlayer.PlayPopSound(1);
-			// Logic for wrong
-			bubble.transform.localPosition = new Vector2(10000, 10000); // Hide from screen
+			bubbles.Remove (bubble);
+			Destroy (bubble);
+			bubbleObjects.RemoveAt(currentIndex);
 			if (!sprite.Equals ("Bubble")) {
 				for (int i = 0; i < 20; i++) {
-					moreBubbles.Add (CreateBubble("Bubble", (int)randomNormal(8, 3, 3, 20)).bubble);
+					var newBubble = CreateBubble("Bubble", (int)randomNormal(8, 3, 3, 20));
+					bubbleObjects.Add (newBubble);
+					bubbles.Add (newBubble.bubble);
 				}
 			}
 		} 
@@ -254,36 +250,6 @@ public class Game : MonoBehaviour {
 		clickOccurred = true;
 
 		StartCoroutine (FadeInstructions());
-	}
-
-	void HandleClickOver() {
-		var sprite = bubbleObjects [currentIndex].Sprite;
-		if (sprite.Contains ("Item" + (itemIndex + 1)) || sprite.Equals ("Item1/Part1")) {
-			var clickedObject = bubbles [currentIndex];
-			bubbles.Remove (clickedObject);
-			bubbleObjects.RemoveAt (currentIndex);
-
-			clickedObject.transform.localScale /= 1.2f;
-			var scale = clickedObject.transform.localScale;
-			clickedObject.transform.localPosition = 
-				new Vector3(1000 + poppedPosition + scale.x / 2 + 10, -canvasDimensions.height / 2 + scale.y / 2 + 10, -0.01f);
-			clickedObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
-			Destroy (clickedObject.GetComponent<Collider2D> ());
-
-			poppedPosition += canvasDimensions.width / (RealBubbleCount) - 20 / RealBubbleCount;
-
-			var part = items [itemIndex].transform.Find ("Part" + sprite [sprite.Length - 1]).gameObject;
-			part.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, 1f);
-		} else {
-			bubbles [currentIndex].GetComponent<SpriteRenderer> ().color = Color.white;
-			var rb = bubbles [currentIndex].GetComponent<Rigidbody2D> ();
-			rb.velocity = new Vector2 ((float)(Random.value * 5 - 2.5), randomNormal(3, 2, 1, 7));
-		}
-
-		if (bubbleObjects.Count == BubbleCount - RealBubbleCount) { // Last object found
-			soundPlayer.PlayGameOverSounds ();
-		}
-		currentIndex = -1;
 	}
 
 	float randomNormal(float mean, float stdDev, float min, float max) {
