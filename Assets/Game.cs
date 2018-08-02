@@ -53,6 +53,8 @@ public class Game : MonoBehaviour {
 
 	private List<GameObject> moreBubbles;
 
+	public Material defaultMaterial;
+
 	// Use this for initialization
 	void Start () {
 		canvasDimensions = canvas.GetComponent<RectTransform> ().rect;
@@ -68,7 +70,7 @@ public class Game : MonoBehaviour {
 		RealBubbleCount = (itemIndex == 1) ? RocketPartCount : DefaultPartCount;
 		collectedPartsCount = 0;
 		itemYPos = items [itemIndex].transform.localPosition.y;
-
+		Debug.Log(items[itemIndex].transform.Find ("Part1").gameObject.GetComponent<SpriteRenderer>().color.grayscale);
 		for (int i = 0; i < items.Length; i++) {
 			if (i == itemIndex) {
 
@@ -229,7 +231,8 @@ public class Game : MonoBehaviour {
 			Destroy (clickedObject);
 
 			var part = items [itemIndex].transform.Find ("Part" + sprite [sprite.Length - 1]).gameObject;
-			part.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, 1f);
+			//part.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, 1f);
+			part.GetComponent<SpriteRenderer>().material = defaultMaterial;
 
 			touchCount++;
 			collectedPartsCount++;
