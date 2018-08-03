@@ -46,8 +46,8 @@ public class Game : MonoBehaviour {
 	private int itemIndex;
 	private float itemYPos;
 
-	private const int DefaultPartCount = 4;
-	private const int RocketPartCount = 5;
+	private readonly int[] DefaultPartCounts = {7, 8, 8, 6};
+	//private const int RocketPartCount = 5;
 
 	private int collectedPartsCount;
 
@@ -67,10 +67,10 @@ public class Game : MonoBehaviour {
 		moreBubbles = new List<GameObject> ();
 
 		itemIndex = (int)(Random.value * items.Length);
-		RealBubbleCount = (itemIndex == 1) ? RocketPartCount : DefaultPartCount;
+		RealBubbleCount = DefaultPartCounts [itemIndex];// (itemIndex == 1) ? RocketPartCount : DefaultPartCount;
 		collectedPartsCount = 0;
 		itemYPos = items [itemIndex].transform.localPosition.y;
-		Debug.Log(items[itemIndex].transform.Find ("Part1").gameObject.GetComponent<SpriteRenderer>().color.grayscale);
+
 		for (int i = 0; i < items.Length; i++) {
 			if (i == itemIndex) {
 
@@ -81,7 +81,7 @@ public class Game : MonoBehaviour {
 
 		int tempCount = 0;
 		for (int i = 0; i < items.Length; i++) {
-			for (int j = 1; j < (i == 1 ? RocketPartCount : DefaultPartCount); j++) {
+			for (int j = 1; j < DefaultPartCounts[i]; j++) {
 				string sprite = "Item" + (i + 1) + "/Part" + (j + 1);
 				int divideBySize = 10 * (int)randomNormal (8, 3, 3, 20);
 				bubbleObjects.Add(CreateBubble (sprite, divideBySize));
@@ -116,7 +116,7 @@ public class Game : MonoBehaviour {
 			TextSharpener.SharpenText (button.GetComponentInChildren<Text> ());
 			button.SetActive (false);
 		}
-
+		Debug.Log (RealBubbleCount);Debug.Log (itemIndex + 1);
 		soundPlayer.PlayBackgroundBubbling ();
 
 		float tuffyXOffset = tuffy.GetComponent<RectTransform> ().rect.width * tuffy.transform.localScale.x * 7 / 10;
