@@ -30,7 +30,7 @@ public class Bubble {
 
 		var collider = bubble.AddComponent<CircleCollider2D> ();
 		if (sprite.Contains ("Item")) {
-			collider.radius *= 10;
+			collider.radius *= 5;
 		}
 		bubble.layer = 0;
 		Physics2D.IgnoreLayerCollision (0, 0);

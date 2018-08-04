@@ -83,14 +83,14 @@ public class Game : MonoBehaviour {
 		for (int i = 0; i < items.Length; i++) {
 			for (int j = 1; j < DefaultPartCounts[i]; j++) {
 				string sprite = "Item" + (i + 1) + "/Part" + (j + 1);
-				int divideBySize = 10 * (int)randomNormal (8, 3, 3, 20);
+				int divideBySize = 5 * (int)randomNormal (8, 3, 3, 20);
 				bubbleObjects.Add(CreateBubble (sprite, divideBySize));
 				bubbles.Add (bubbleObjects [tempCount].bubble);
 				tempCount++;
 			}
 		}
 
-		bubbleObjects.Add(CreateBubble ("Item1/Part1", 10 * (int)randomNormal (8, 3, 3, 20))); // Box part that's shared
+		bubbleObjects.Add(CreateBubble ("Item1/Part1", 5 * (int)randomNormal (8, 3, 3, 20))); // Box part that's shared
 		bubbles.Add (bubbleObjects [tempCount].bubble);
 		tempCount++;
 
