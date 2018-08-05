@@ -29,7 +29,7 @@ public class Bubble {
 			new Vector2 (canvasDimensions.height / divideBySize, canvasDimensions.height / divideBySize);
 
 		var collider = bubble.AddComponent<CircleCollider2D> ();
-		if (sprite.Contains ("Item")) {
+		if (sprite.Contains ("Item") || sprite.Equals("tuffy")) {
 			collider.radius *= 5;
 		}
 		bubble.layer = 0;
@@ -42,6 +42,5 @@ public class Bubble {
 
 		Period = Random.value * 4;
 		Amplitude = Random.value * Mathf.Min(rigidbody.velocity.y, 5);
-
 	}
 }

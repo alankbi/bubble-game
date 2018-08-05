@@ -26,7 +26,7 @@ public class Game : MonoBehaviour {
 
 	private float poppedPosition;
 
-	private const int BubbleCount = 360;
+	private const int BubbleCount = 400;
 	private int RealBubbleCount;
 
 	public GameObject[] gameOverButtons;
@@ -46,8 +46,9 @@ public class Game : MonoBehaviour {
 	private int itemIndex;
 	private float itemYPos;
 
+	private Rect menuButtonBounds;
+
 	private readonly int[] DefaultPartCounts = {7, 8, 8, 6};
-	//private const int RocketPartCount = 5;
 
 	private int collectedPartsCount;
 
@@ -67,9 +68,13 @@ public class Game : MonoBehaviour {
 		moreBubbles = new List<GameObject> ();
 
 		itemIndex = (int)(Random.value * items.Length);
-		RealBubbleCount = DefaultPartCounts [itemIndex];// (itemIndex == 1) ? RocketPartCount : DefaultPartCount;
+		RealBubbleCount = DefaultPartCounts [itemIndex];
 		collectedPartsCount = 0;
 		itemYPos = items [itemIndex].transform.localPosition.y;
+
+		menuButtonBounds = instructions.GetComponent<RectTransform> ().rect;
+		menuButtonBounds.size *= 2;
+		menuButtonBounds.center = new Vector2(-canvasDimensions.width / 2, canvasDimensions.height / 2 - 10);//instructions.transform.localPosition;
 
 		for (int i = 0; i < items.Length; i++) {
 			if (i == itemIndex) {
@@ -83,20 +88,30 @@ public class Game : MonoBehaviour {
 		for (int i = 0; i < items.Length; i++) {
 			for (int j = 1; j < DefaultPartCounts[i]; j++) {
 				string sprite = "Item" + (i + 1) + "/Part" + (j + 1);
-				int divideBySize = 5 * (int)randomNormal (8, 3, 3, 20);
+				int divideBySize = 5 * (int)randomNormal (7, 4, 3, 20);
 				bubbleObjects.Add(CreateBubble (sprite, divideBySize));
 				bubbles.Add (bubbleObjects [tempCount].bubble);
 				tempCount++;
 			}
 		}
 
-		bubbleObjects.Add(CreateBubble ("Item1/Part1", 5 * (int)randomNormal (8, 3, 3, 20))); // Box part that's shared
+		// Box part that's shared
+		bubbleObjects.Add(CreateBubble ("Item1/Part1", 5 * (int)randomNormal (7, 4, 3, 20))); 
 		bubbles.Add (bubbleObjects [tempCount].bubble);
 		tempCount++;
 
+		// Random tuffy objects
+		for (int i = tempCount; i < tempCount + 5; i++) {
+			string sprite = "tuffy"; 
+			int divideBySize = 5 * (int)randomNormal (7, 4, 3, 20); 
+			bubbleObjects.Add(CreateBubble (sprite, divideBySize));
+			bubbles.Add(bubbleObjects[i].bubble);
+		}
+		tempCount += 5;
+
 		for (int i = tempCount; i < BubbleCount; i++) {
 			string sprite = "Bubble"; 
-			int divideBySize = (int)randomNormal (8, 3, 3, 20); //(int) (Random.value * 5 + 6);
+			int divideBySize = (int)randomNormal (7, 4, 3, 20); 
 			bubbleObjects.Add(CreateBubble (sprite, divideBySize));
 			bubbles.Add(bubbleObjects[i].bubble);
 		}
@@ -116,7 +131,6 @@ public class Game : MonoBehaviour {
 			TextSharpener.SharpenText (button.GetComponentInChildren<Text> ());
 			button.SetActive (false);
 		}
-		Debug.Log (RealBubbleCount);Debug.Log (itemIndex + 1);
 		soundPlayer.PlayBackgroundBubbling ();
 
 		float tuffyXOffset = tuffy.GetComponent<RectTransform> ().rect.width * tuffy.transform.localScale.x * 7 / 10;
@@ -126,6 +140,7 @@ public class Game : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		CheckClicks ();
+		HandleBubbleMotion ();
 
 		isGameOver = (collectedPartsCount == RealBubbleCount);
 
@@ -148,9 +163,12 @@ public class Game : MonoBehaviour {
 	}
 
 	Bubble CreateBubble(string sprite, int divideBySize) {
-		var pos = new Vector3 ((float)(Random.value * canvasDimensions.width - canvasDimensions.width / 2), 
-			(float)((Random.value - 0.5f) * canvasDimensions.height), 
-			Random.value);
+		Vector3 pos;
+		do {
+			pos = new Vector3 ((float)(Random.value * canvasDimensions.width - canvasDimensions.width / 2), 
+				(float)((Random.value - 0.5f) * canvasDimensions.height), 
+				Random.value);
+		} while (Vector3.Distance(pos, items[itemIndex].transform.localPosition) < 70 || menuButtonBounds.Contains(pos));
 
 		int maxYSpeed = sprite.Contains ("Item") ? 7 : 10;
 
@@ -187,22 +205,20 @@ public class Game : MonoBehaviour {
 	void HandleBubbleMotion() {
 		time += Time.deltaTime;
 		for (int i = 0; i < bubbles.Count; i++) {
-			var testBody = bubbles[i].GetComponent<Rigidbody2D> ();
-			var vel = testBody.velocity;
-			if (i != currentIndex) {
-				vel.x = bubbleObjects [i].Amplitude * Mathf.Sin (time * bubbleObjects [i].Period);
-			}
-			testBody.velocity = vel;
+			var rb = bubbles [i].GetComponent<Rigidbody2D> ();
+			rb.velocity = new Vector2(rb.velocity.x * 0.95f * Time.deltaTime, rb.velocity.y * 0.90f);
 
-			if (bubbles[i].transform.localPosition.y > canvasDimensions.height / 2 + 20) {
-				bubbles[i].transform.localPosition = 
-					new Vector3 ((float)(Random.value * canvasDimensions.width - canvasDimensions.width / 2), 
-						-5 * canvasDimensions.height / 2, 
-						bubbles[i].transform.localPosition.z);
+			var pos = bubbles [i].transform.localPosition;
+			if (pos.x < -canvasDimensions.width / 2) {
+				bubbles [i].transform.localPosition = (new Vector2 (-canvasDimensions.width / 2, pos.y));
+			} else if (pos.x > canvasDimensions.width / 2) {
+				bubbles [i].transform.localPosition = (new Vector2 (canvasDimensions.width / 2, pos.y));
+			} else if (pos.y < -canvasDimensions.height / 2) {
+				bubbles [i].transform.localPosition = (new Vector2 (pos.x, -canvasDimensions.height / 2));
+			} else if (pos.y > canvasDimensions.height / 2) {
+				bubbles [i].transform.localPosition = (new Vector2 (pos.x, canvasDimensions.height / 2));
 			}
 		}
-		items [itemIndex].transform.localPosition = 
-			new Vector3 (items [itemIndex].transform.localPosition.x, itemYPos + 15 * Mathf.Sin (time), -0.01f);
 	}
 
 	void HandleClick(GameObject bubble) {
@@ -216,6 +232,10 @@ public class Game : MonoBehaviour {
 		}
 
 		var rb = bubble.GetComponent<Rigidbody2D> ();
+		foreach (var b in bubbles) {
+			b.GetComponent<Rigidbody2D>().AddExplosionForce (30, bubble.transform.position, 3);
+		}
+
 
 		var sprite = bubbleObjects [currentIndex].Sprite;
 		if (sprite.Contains ("Item" + (itemIndex + 1)) || sprite.Equals ("Item1/Part1")) { // Correct
@@ -242,17 +262,23 @@ public class Game : MonoBehaviour {
 			Destroy (bubble);
 			bubbleObjects.RemoveAt(currentIndex);
 			if (!sprite.Equals ("Bubble")) {
-				for (int i = 0; i < 20; i++) {
-					var newBubble = CreateBubble("Bubble", (int)randomNormal(8, 3, 3, 20));
-					bubbleObjects.Add (newBubble);
-					bubbles.Add (newBubble.bubble);
-				}
+				StartCoroutine(AddBubbles ());
 			}
 		} 
 
 		clickOccurred = true;
 
 		StartCoroutine (FadeInstructions());
+	}
+
+	IEnumerator AddBubbles() {
+		for (int i = 0; i < 20; i++) {
+			var newBubble = CreateBubble("Bubble", (int)randomNormal(8, 3, 3, 20));
+			bubbleObjects.Add (newBubble);
+			bubbles.Add (newBubble.bubble);
+			soundPlayer.PlayPopSound (1f);
+			yield return null;
+		}
 	}
 
 	float randomNormal(float mean, float stdDev, float min, float max) {
