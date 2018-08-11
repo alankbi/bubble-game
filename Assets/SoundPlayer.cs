@@ -53,7 +53,6 @@ public class SoundPlayer {
 
 	public void PlayBackgroundBubbling() {
 		audioSource.Play ();
-		PlayBackgroundMusic ();
 	}
 
 	private void Shuffle(Object[] array) {
@@ -66,12 +65,13 @@ public class SoundPlayer {
 		}
 	}
 
-	public void PlayBackgroundMusic() {
+	public AudioClip PlayBackgroundMusic() {
 		if (backgroundMusicIndex >= backgroundMusic.Length) {
 			backgroundMusicIndex = 0;
 			Shuffle (backgroundMusic);
 		}
 		var clip = (AudioClip)backgroundMusic [backgroundMusicIndex++];
 		audioSource.PlayOneShot (clip, 0.4f);
+		return clip;
 	}
 }

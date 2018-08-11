@@ -74,7 +74,7 @@ public class Game : MonoBehaviour {
 
 		menuButtonBounds = instructions.GetComponent<RectTransform> ().rect;
 		menuButtonBounds.size *= 2;
-		menuButtonBounds.center = new Vector2(-canvasDimensions.width / 2, canvasDimensions.height / 2 - 10);//instructions.transform.localPosition;
+		menuButtonBounds.center = new Vector2(-canvasDimensions.width / 2, canvasDimensions.height / 2 - 10);
 
 		for (int i = 0; i < items.Length; i++) {
 			if (i == itemIndex) {
@@ -88,7 +88,7 @@ public class Game : MonoBehaviour {
 		for (int i = 0; i < items.Length; i++) {
 			for (int j = 1; j < DefaultPartCounts[i]; j++) {
 				string sprite = "Item" + (i + 1) + "/Part" + (j + 1);
-				int divideBySize = 5 * (int)randomNormal (7, 4, 3, 20);
+				int divideBySize = 5 * (int)randomNormal (7, 4, 3, 12);
 				bubbleObjects.Add(CreateBubble (sprite, divideBySize));
 				bubbles.Add (bubbleObjects [tempCount].bubble);
 				tempCount++;
@@ -96,22 +96,22 @@ public class Game : MonoBehaviour {
 		}
 
 		// Box part that's shared
-		bubbleObjects.Add(CreateBubble ("Item1/Part1", 5 * (int)randomNormal (7, 4, 3, 20))); 
+		bubbleObjects.Add(CreateBubble ("Item1/Part1", 5 * (int)randomNormal (7, 4, 3, 12))); 
 		bubbles.Add (bubbleObjects [tempCount].bubble);
 		tempCount++;
 
 		// Random tuffy objects
-		for (int i = tempCount; i < tempCount + 5; i++) {
+		for (int i = tempCount; i < tempCount + 15; i++) {
 			string sprite = "tuffy"; 
-			int divideBySize = 5 * (int)randomNormal (7, 4, 3, 20); 
+			int divideBySize = 5 * (int)randomNormal (7, 4, 3, 12); 
 			bubbleObjects.Add(CreateBubble (sprite, divideBySize));
 			bubbles.Add(bubbleObjects[i].bubble);
 		}
-		tempCount += 5;
+		tempCount += 15;
 
 		for (int i = tempCount; i < BubbleCount; i++) {
 			string sprite = "Bubble"; 
-			int divideBySize = (int)randomNormal (7, 4, 3, 20); 
+			int divideBySize = (int)randomNormal (7, 4, 3, 12); 
 			bubbleObjects.Add(CreateBubble (sprite, divideBySize));
 			bubbles.Add(bubbleObjects[i].bubble);
 		}
@@ -132,9 +132,10 @@ public class Game : MonoBehaviour {
 			button.SetActive (false);
 		}
 		soundPlayer.PlayBackgroundBubbling ();
+		PlayBackgroundMusic ();
 
-		float tuffyXOffset = tuffy.GetComponent<RectTransform> ().rect.width * tuffy.transform.localScale.x * 7 / 10;
-		tuffy.transform.localPosition = new Vector2(canvasDimensions.width / 2 + tuffyXOffset, 0);
+		float tuffyXOffset = tuffy.GetComponent<RectTransform> ().rect.width * tuffy.transform.localScale.x * 4 / 5;
+		tuffy.transform.localPosition = new Vector2(canvasDimensions.width / 2 + tuffyXOffset, -3 * canvasDimensions.height / 5);
 	}
 	
 	// Update is called once per frame
@@ -306,8 +307,13 @@ public class Game : MonoBehaviour {
 		int width = (int) (tuffy.GetComponent<RectTransform> ().rect.width * tuffy.transform.localScale.x);
 		for (int i = 0; i < width; i++) {
 			var pos = tuffy.transform.localPosition;
-			tuffy.transform.localPosition = new Vector2 (pos.x - 1, pos.y);
+			tuffy.transform.localPosition = new Vector3 (pos.x - 1, pos.y + (i % 2 == 0 ? 1 : 0), -0.01f);
 			yield return null;
 		}
+	}
+
+	void PlayBackgroundMusic() {
+		var clip = soundPlayer.PlayBackgroundMusic ();
+		Invoke ("PlayBackgroundMusic", clip.length + 1);
 	}
 }
