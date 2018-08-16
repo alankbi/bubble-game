@@ -48,7 +48,8 @@ public class Game : MonoBehaviour {
 
 	private Rect menuButtonBounds;
 
-	private readonly int[] DefaultPartCounts = {7, 8, 8, 6};
+	private readonly int[] DefaultPartCounts = {7, 8, 8, 6, 1};
+	private bool isTuffyVariant;
 
 	private int collectedPartsCount;
 
@@ -69,6 +70,10 @@ public class Game : MonoBehaviour {
 
 		itemIndex = (int)(Random.value * items.Length);
 		RealBubbleCount = DefaultPartCounts [itemIndex];
+		isTuffyVariant = RealBubbleCount == 1;
+		if (isTuffyVariant) {
+			instructions.text = "Find the correct image of Tuffy Tiger in the bubbles!";
+		}
 		collectedPartsCount = 0;
 		itemYPos = items [itemIndex].transform.localPosition.y;
 
@@ -86,7 +91,8 @@ public class Game : MonoBehaviour {
 
 		int tempCount = 0;
 		for (int i = 0; i < items.Length; i++) {
-			for (int j = 1; j < DefaultPartCounts[i]; j++) {
+			var temp = DefaultPartCounts [i] == 1 ? 2 : DefaultPartCounts [i];
+			for (int j = 1; j < temp; j++) {
 				string sprite = "Item" + (i + 1) + "/Part" + (j + 1);
 				int divideBySize = 5 * (int)randomNormal (7, 4, 3, 12);
 				bubbleObjects.Add(CreateBubble (sprite, divideBySize));
@@ -239,7 +245,7 @@ public class Game : MonoBehaviour {
 
 
 		var sprite = bubbleObjects [currentIndex].Sprite;
-		if (sprite.Contains ("Item" + (itemIndex + 1)) || sprite.Equals ("Item1/Part1")) { // Correct
+		if (sprite.Contains ("Item" + (itemIndex + 1)) || sprite.Equals ("Item1/Part1") && !isTuffyVariant) { // Correct
 			if (touchCount % 2 == 0 && collectedPartsCount + 1 != RealBubbleCount) {
 				soundPlayer.PlayCorrectAnswerSounds ();
 			} else if (collectedPartsCount + 1 == RealBubbleCount) {
