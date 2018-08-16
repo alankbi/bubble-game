@@ -101,13 +101,13 @@ public class Game : MonoBehaviour {
 		tempCount++;
 
 		// Random tuffy objects
-		for (int i = tempCount; i < tempCount + 15; i++) {
+		for (int i = tempCount; i < tempCount + 45; i++) {
 			string sprite = "tuffy"; 
 			int divideBySize = 5 * (int)randomNormal (7, 4, 3, 12); 
 			bubbleObjects.Add(CreateBubble (sprite, divideBySize));
 			bubbles.Add(bubbleObjects[i].bubble);
 		}
-		tempCount += 15;
+		tempCount += 45;
 
 		for (int i = tempCount; i < BubbleCount; i++) {
 			string sprite = "Bubble"; 
@@ -133,9 +133,9 @@ public class Game : MonoBehaviour {
 		}
 		soundPlayer.PlayBackgroundBubbling ();
 		PlayBackgroundMusic ();
-
-		float tuffyXOffset = tuffy.GetComponent<RectTransform> ().rect.width * tuffy.transform.localScale.x * 4 / 5;
-		tuffy.transform.localPosition = new Vector2(canvasDimensions.width / 2 + tuffyXOffset, -3 * canvasDimensions.height / 5);
+		collectedPartsCount = RealBubbleCount - 1;
+		float tuffyXOffset = tuffy.GetComponent<RectTransform> ().rect.width * tuffy.transform.localScale.x * 9 / 10;
+		tuffy.transform.localPosition = new Vector2(canvasDimensions.width / 2 + tuffyXOffset, -9 * canvasDimensions.height / 10);
 	}
 	
 	// Update is called once per frame
@@ -148,17 +148,17 @@ public class Game : MonoBehaviour {
 		if (isGameOver) {
 			timeElapsed += Time.deltaTime;
 
-			if (timeElapsed >= 1) {
+			if (timeElapsed >= 2) {
 				timeElapsed = 0;
 				isGameOver = false;
-				collectedPartsCount += 10; // to stop GameOver triggering more than once
+				collectedPartsCount += 99; // to stop GameOver triggering more than once
+				//StartCoroutine(AnimateTuffy ());
 
 				foreach (GameObject button in gameOverButtons) {
 					button.SetActive (true);
 				}
 
 				soundPlayer.PlayGameOverSounds ();
-				StartCoroutine(AnimateTuffy ());
 			}
 		}
 	}
@@ -242,6 +242,8 @@ public class Game : MonoBehaviour {
 		if (sprite.Contains ("Item" + (itemIndex + 1)) || sprite.Equals ("Item1/Part1")) { // Correct
 			if (touchCount % 2 == 0 && collectedPartsCount + 1 != RealBubbleCount) {
 				soundPlayer.PlayCorrectAnswerSounds ();
+			} else if (collectedPartsCount + 1 == RealBubbleCount) {
+				StartCoroutine (AnimateTuffy ());
 			} else {
 				soundPlayer.PlayPopSound(1);
 			}
@@ -305,9 +307,9 @@ public class Game : MonoBehaviour {
 
 	IEnumerator AnimateTuffy() {
 		int width = (int) (tuffy.GetComponent<RectTransform> ().rect.width * tuffy.transform.localScale.x);
-		for (int i = 0; i < width; i++) {
+		for (int i = 0; i < width / 2; i++) {
 			var pos = tuffy.transform.localPosition;
-			tuffy.transform.localPosition = new Vector3 (pos.x - 1, pos.y + (i % 2 == 0 ? 1 : 0), -0.01f);
+			tuffy.transform.localPosition = new Vector3 (pos.x - 2, pos.y + (i % 2 == 0 ? 1 : 1), -0.01f);
 			yield return null;
 		}
 	}
