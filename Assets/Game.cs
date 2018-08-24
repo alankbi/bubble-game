@@ -26,7 +26,7 @@ public class Game : MonoBehaviour {
 
 	private float poppedPosition;
 
-	private const int BubbleCount = 400;
+	private const int BubbleCount = 1;//400;
 	private int RealBubbleCount;
 
 	public GameObject[] gameOverButtons;
@@ -41,6 +41,7 @@ public class Game : MonoBehaviour {
 
 	public Text instructions;
 	public GameObject tuffy;
+	private Object[] tuffies;
 
 	public GameObject[] items;
 	private int itemIndex;
@@ -50,6 +51,7 @@ public class Game : MonoBehaviour {
 
 	private readonly int[] DefaultPartCounts = {7, 8, 8, 6, 1};
 	private bool isTuffyVariant;
+	private int tuffyIndex = 0;
 
 	private int collectedPartsCount;
 
@@ -70,8 +72,10 @@ public class Game : MonoBehaviour {
 
 		itemIndex = (int)(Random.value * items.Length);
 		RealBubbleCount = DefaultPartCounts [itemIndex];
+		tuffies = Resources.LoadAll ("BubbleSprites/Item5", typeof(Sprite));
 		isTuffyVariant = RealBubbleCount == 1;
 		if (isTuffyVariant) {
+			tuffyIndex = (int) (Random.value * tuffies.Length);
 			instructions.text = "Find the correct image of Tuffy Tiger in the bubbles!";
 		}
 		collectedPartsCount = 0;
@@ -106,14 +110,25 @@ public class Game : MonoBehaviour {
 		bubbles.Add (bubbleObjects [tempCount].bubble);
 		tempCount++;
 
+		if (isTuffyVariant) {
+			bubbleObjects.Add(CreateBubble ("Item5/pic" + tuffyIndex, 5 * (int)randomNormal (7, 4, 3, 12))); 
+			bubbles.Add (bubbleObjects [tempCount].bubble);
+			items[itemIndex].transform.Find ("Part2").gameObject.GetComponent<SpriteRenderer>().sprite = (Sprite)Resources.Load("BubbleSprites/Item5/pic" + tuffyIndex, typeof(Sprite));
+			tempCount++;
+		}
+
 		// Random tuffy objects
-		for (int i = tempCount; i < tempCount + 45; i++) {
-			string sprite = "tuffy"; 
+		for (int i = tempCount; i < tempCount + 15; i++) {
+			int pic;
+			do {
+				pic = (int) (Random.value * tuffies.Length);
+			} while (pic == tuffyIndex);
+			string sprite = "Item5/pic" + pic; 
 			int divideBySize = 5 * (int)randomNormal (7, 4, 3, 12); 
 			bubbleObjects.Add(CreateBubble (sprite, divideBySize));
 			bubbles.Add(bubbleObjects[i].bubble);
 		}
-		tempCount += 45;
+		tempCount += 15;
 
 		for (int i = tempCount; i < BubbleCount; i++) {
 			string sprite = "Bubble"; 
@@ -139,7 +154,7 @@ public class Game : MonoBehaviour {
 		}
 		soundPlayer.PlayBackgroundBubbling ();
 		PlayBackgroundMusic ();
-		collectedPartsCount = RealBubbleCount - 1;
+
 		float tuffyXOffset = tuffy.GetComponent<RectTransform> ().rect.width * tuffy.transform.localScale.x * 9 / 10;
 		tuffy.transform.localPosition = new Vector2(canvasDimensions.width / 2 + tuffyXOffset, -9 * canvasDimensions.height / 10);
 	}
@@ -245,7 +260,7 @@ public class Game : MonoBehaviour {
 
 
 		var sprite = bubbleObjects [currentIndex].Sprite;
-		if (sprite.Contains ("Item" + (itemIndex + 1)) || sprite.Equals ("Item1/Part1") && !isTuffyVariant) { // Correct
+		if (sprite.Contains ("Item" + (itemIndex + 1)) && (!isTuffyVariant || sprite.Contains("pic" + tuffyIndex)) || sprite.Equals ("Item1/Part1") && !isTuffyVariant) { // Correct
 			if (touchCount % 2 == 0 && collectedPartsCount + 1 != RealBubbleCount) {
 				soundPlayer.PlayCorrectAnswerSounds ();
 			} else if (collectedPartsCount + 1 == RealBubbleCount) {
@@ -259,7 +274,8 @@ public class Game : MonoBehaviour {
 			bubbleObjects.RemoveAt (currentIndex);
 			Destroy (clickedObject);
 
-			var part = items [itemIndex].transform.Find ("Part" + sprite [sprite.Length - 1]).gameObject;
+			char partNumber = isTuffyVariant ? '2': sprite [sprite.Length - 1];
+			var part = items [itemIndex].transform.Find ("Part" + partNumber).gameObject;
 			//part.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, 1f);
 			part.GetComponent<SpriteRenderer>().material = defaultMaterial;
 
@@ -281,7 +297,7 @@ public class Game : MonoBehaviour {
 	}
 
 	IEnumerator AddBubbles() {
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 1; i++) {
 			var newBubble = CreateBubble("Bubble", (int)randomNormal(8, 3, 3, 20));
 			bubbleObjects.Add (newBubble);
 			bubbles.Add (newBubble.bubble);
