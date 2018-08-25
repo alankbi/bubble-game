@@ -26,7 +26,7 @@ public class Game : MonoBehaviour {
 
 	private float poppedPosition;
 
-	private const int BubbleCount = 1;//400;
+	private const int BubbleCount = 300;
 	private int RealBubbleCount;
 
 	public GameObject[] gameOverButtons;
@@ -120,7 +120,7 @@ public class Game : MonoBehaviour {
 		}
 
 		// Random tuffy objects
-		for (int i = tempCount; i < tempCount + 15; i++) {
+		for (int i = tempCount; i < tempCount + 90; i++) {
 			int pic;
 			do {
 				pic = (int) (Random.value * tuffies.Length);
@@ -130,7 +130,7 @@ public class Game : MonoBehaviour {
 			bubbleObjects.Add(CreateBubble (sprite, divideBySize));
 			bubbles.Add(bubbleObjects[i].bubble);
 		}
-		tempCount += 15;
+		tempCount += 90;
 
 		for (int i = tempCount; i < BubbleCount; i++) {
 			string sprite = "Bubble"; 
@@ -303,12 +303,12 @@ public class Game : MonoBehaviour {
 	}
 
 	IEnumerator AddBubbles() {
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 10; i++) {
 			var newBubble = CreateBubble("Bubble", (int)randomNormal(8, 3, 3, 20));
 			bubbleObjects.Add (newBubble);
 			bubbles.Add (newBubble.bubble);
 			soundPlayer.PlayPopSound (1f);
-			yield return null;
+			yield return new WaitForSeconds(0.05f);
 		}
 	}
 
@@ -347,10 +347,12 @@ public class Game : MonoBehaviour {
 		Invoke ("PlayBackgroundMusic", clip.length + 1);
 	}
 
-	void ShowPoppedObject(GameObject poppedBubble, string sprite) {
-		var poppedObject = Instantiate (poppedBubble, canvas);
+	void ShowPoppedObject(GameObject clickedObject, string sprite) {
+		var poppedObject = Instantiate (clickedObject, canvas);
 		poppedObject.GetComponent<SpriteRenderer> ().sprite = (Sprite)Resources.Load ("BubbleSprites/" + sprite + (sprite.Contains("Item5") ? "" : "t"), typeof(Sprite));
 		poppedObject.transform.localScale /= 5;
+		var pos = poppedObject.transform.localPosition;
+		poppedObject.transform.localPosition = new Vector3 (pos.x, pos.y, -0.01f);
 		poppedAppearances.Enqueue (poppedObject);
 		Invoke ("HidePoppedObject", 1);
 	}
