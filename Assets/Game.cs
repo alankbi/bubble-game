@@ -59,6 +59,8 @@ public class Game : MonoBehaviour {
 
 	public Material defaultMaterial;
 
+	private Queue<GameObject> poppedAppearances;
+
 	// Use this for initialization
 	void Start () {
 		canvasDimensions = canvas.GetComponent<RectTransform> ().rect;
@@ -157,6 +159,7 @@ public class Game : MonoBehaviour {
 
 		float tuffyXOffset = tuffy.GetComponent<RectTransform> ().rect.width * tuffy.transform.localScale.x * 9 / 10;
 		tuffy.transform.localPosition = new Vector2(canvasDimensions.width / 2 + tuffyXOffset, -9 * canvasDimensions.height / 10);
+		poppedAppearances = new Queue<GameObject> ();
 	}
 	
 	// Update is called once per frame
@@ -272,6 +275,12 @@ public class Game : MonoBehaviour {
 			var clickedObject = bubbles [currentIndex];
 			bubbles.Remove (clickedObject);
 			bubbleObjects.RemoveAt (currentIndex);
+
+			var poppedObject = Instantiate (clickedObject, canvas);
+			poppedObject.GetComponent<SpriteRenderer> ().sprite = (Sprite)Resources.Load ("BubbleSprites/" + sprite, typeof(Sprite));
+			poppedAppearances.Enqueue (poppedObject);
+			Invoke ("HidePoppedObject", 1);
+			
 			Destroy (clickedObject);
 
 			char partNumber = isTuffyVariant ? '2': sprite [sprite.Length - 1];
@@ -284,11 +293,16 @@ public class Game : MonoBehaviour {
 		} else {
 			soundPlayer.PlayPopSound(1);
 			bubbles.Remove (bubble);
-			Destroy (bubble);
-			bubbleObjects.RemoveAt(currentIndex);
+
 			if (!sprite.Equals ("Bubble")) {
 				StartCoroutine(AddBubbles ());
+				var poppedObject = Instantiate (bubble, canvas);
+				poppedObject.GetComponent<SpriteRenderer> ().sprite = (Sprite)Resources.Load ("BubbleSprites/" + sprite, typeof(Sprite));
+				poppedAppearances.Enqueue (poppedObject);
+				Invoke ("HidePoppedObject", 1);
 			}
+			Destroy (bubble);
+			bubbleObjects.RemoveAt(currentIndex);
 		} 
 
 		clickOccurred = true;
@@ -339,5 +353,9 @@ public class Game : MonoBehaviour {
 	void PlayBackgroundMusic() {
 		var clip = soundPlayer.PlayBackgroundMusic ();
 		Invoke ("PlayBackgroundMusic", clip.length + 1);
+	}
+
+	void HidePoppedObject() {
+		Destroy (poppedAppearances.Dequeue ());
 	}
 }
