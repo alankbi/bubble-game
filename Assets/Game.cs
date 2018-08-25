@@ -275,12 +275,7 @@ public class Game : MonoBehaviour {
 			var clickedObject = bubbles [currentIndex];
 			bubbles.Remove (clickedObject);
 			bubbleObjects.RemoveAt (currentIndex);
-
-			var poppedObject = Instantiate (clickedObject, canvas);
-			poppedObject.GetComponent<SpriteRenderer> ().sprite = (Sprite)Resources.Load ("BubbleSprites/" + sprite, typeof(Sprite));
-			poppedAppearances.Enqueue (poppedObject);
-			Invoke ("HidePoppedObject", 1);
-			
+			ShowPoppedObject (clickedObject, sprite);
 			Destroy (clickedObject);
 
 			char partNumber = isTuffyVariant ? '2': sprite [sprite.Length - 1];
@@ -296,10 +291,7 @@ public class Game : MonoBehaviour {
 
 			if (!sprite.Equals ("Bubble")) {
 				StartCoroutine(AddBubbles ());
-				var poppedObject = Instantiate (bubble, canvas);
-				poppedObject.GetComponent<SpriteRenderer> ().sprite = (Sprite)Resources.Load ("BubbleSprites/" + sprite, typeof(Sprite));
-				poppedAppearances.Enqueue (poppedObject);
-				Invoke ("HidePoppedObject", 1);
+				ShowPoppedObject (bubble, sprite);
 			}
 			Destroy (bubble);
 			bubbleObjects.RemoveAt(currentIndex);
@@ -353,6 +345,14 @@ public class Game : MonoBehaviour {
 	void PlayBackgroundMusic() {
 		var clip = soundPlayer.PlayBackgroundMusic ();
 		Invoke ("PlayBackgroundMusic", clip.length + 1);
+	}
+
+	void ShowPoppedObject(GameObject poppedBubble, string sprite) {
+		var poppedObject = Instantiate (poppedBubble, canvas);
+		poppedObject.GetComponent<SpriteRenderer> ().sprite = (Sprite)Resources.Load ("BubbleSprites/" + sprite + (sprite.Contains("Item5") ? "" : "t"), typeof(Sprite));
+		poppedObject.transform.localScale /= 5;
+		poppedAppearances.Enqueue (poppedObject);
+		Invoke ("HidePoppedObject", 1);
 	}
 
 	void HidePoppedObject() {

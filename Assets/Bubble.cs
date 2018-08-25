@@ -24,19 +24,22 @@ public class Bubble {
 		bubble.transform.localPosition = pos;
 		rigidbody.velocity = vel;
 
+		if (sprite.Contains ("Item")) {
+			divideBySize /= 5;
+		}
 		var canvasDimensions = canvas.GetComponent<RectTransform> ().rect;
 		rigidbody.transform.localScale = 
 			new Vector2 (canvasDimensions.height / divideBySize, canvasDimensions.height / divideBySize);
 
 		var collider = bubble.AddComponent<CircleCollider2D> ();
 		if (sprite.Contains ("Item") || sprite.Equals("tuffy")) {
-			collider.radius *= 5;
+			//collider.radius *= 5;
 		}
 		bubble.layer = 0;
 		Physics2D.IgnoreLayerCollision (0, 0);
 
 		var spriteRenderer = bubble.AddComponent<SpriteRenderer>();
-		spriteRenderer.sprite = Resources.Load<Sprite>("BubbleSprites/" + sprite);
+		spriteRenderer.sprite = Resources.Load<Sprite> ("BubbleSprites/Bubble");// + sprite);
 
 		this.bubble = bubble;
 
