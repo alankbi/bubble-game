@@ -45,5 +45,9 @@ public class Bubble {
 
 		Period = Random.value * 4;
 		Amplitude = Random.value * Mathf.Min(rigidbody.velocity.y, 5);
+
+		if (!sprite.Equals ("Bubble")) {
+			bubble.AddComponent<HoverEffect> ();
+		}
 	}
 }

@@ -13,8 +13,8 @@ public class Game : MonoBehaviour {
 
 	private float spriteWidth;
 
-	private List<GameObject> bubbles;
-	private List<Bubble> bubbleObjects;
+	public List<GameObject> bubbles;
+	public List<Bubble> bubbleObjects;
 
 	private int touchCount;
 	private int currentIndex;
@@ -275,7 +275,7 @@ public class Game : MonoBehaviour {
 			var clickedObject = bubbles [currentIndex];
 			bubbles.Remove (clickedObject);
 			bubbleObjects.RemoveAt (currentIndex);
-			ShowPoppedObject (clickedObject, sprite);
+			//ShowPoppedObject (clickedObject, sprite);
 			Destroy (clickedObject);
 
 			char partNumber = isTuffyVariant ? '2': sprite [sprite.Length - 1];
@@ -291,7 +291,7 @@ public class Game : MonoBehaviour {
 
 			if (!sprite.Equals ("Bubble")) {
 				StartCoroutine(AddBubbles ());
-				ShowPoppedObject (bubble, sprite);
+				//ShowPoppedObject (bubble, sprite);
 			}
 			Destroy (bubble);
 			bubbleObjects.RemoveAt(currentIndex);
