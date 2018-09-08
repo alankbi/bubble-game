@@ -26,7 +26,7 @@ public class Game : MonoBehaviour {
 
 	private float poppedPosition;
 
-	private const int BubbleCount = 300;
+	private const int BubbleCount = 0;//300;
 	private int RealBubbleCount;
 
 	public GameObject[] gameOverButtons;
