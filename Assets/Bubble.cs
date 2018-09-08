@@ -48,6 +48,8 @@ public class Bubble {
 
 		if (!sprite.Equals ("Bubble")) {
 			bubble.AddComponent<HoverEffect> ();
+		} else {
+			bubble.GetComponent<SpriteRenderer> ().sortingOrder = (int)(pos.z * -10000) - 1;
 		}
 	}
 }

@@ -42,15 +42,16 @@ public class HoverEffect : MonoBehaviour
 			Destroy (childSprite.GetComponent<CircleCollider2D> ());
 			childSprite.transform.localScale = new Vector2(0.15f, 0.15f);
 			childSprite.SetActive (false);
+			childSprite.GetComponent<SpriteRenderer> ().sortingOrder = (int)(bubbleObject.bubble.transform.localPosition.z * -10000);
 
 			bubbleBackground = Instantiate(bubbleObject.bubble, bubbleObject.bubble.transform);
-			bubbleBackground.transform.localPosition = new Vector3 (0, 0, 0.5f);
+			bubbleBackground.transform.localPosition = new Vector3 (0, 0, 0);
 			bubbleBackground.transform.localScale = new Vector2 (1, 1);
 			Destroy (bubbleBackground.GetComponent<CircleCollider2D> ());
 			foreach (Transform transform in bubbleBackground.transform) {
 				Destroy (transform.gameObject);
 			}
-			childSprite.transform.SetAsFirstSibling ();
+			bubbleBackground.GetComponent<SpriteRenderer> ().sortingOrder = (int) (bubbleObject.bubble.transform.localPosition.z * -10000) - 1;
 			bubbleObject.bubble.GetComponent<SpriteRenderer> ().sprite = null;
 		}
 	}
@@ -63,10 +64,9 @@ public class HoverEffect : MonoBehaviour
 			//gameObject.transform.localScale = objectScale;
 			//gameObject.GetComponent<CircleCollider2D>().radius = objectColliderScale;
 
-			childSprite.transform.localPosition = new Vector3 (0, 0, -0.01f);
-			bubbleBackground.transform.localPosition = new Vector3 (0, 0, 5000f);
+			//childSprite.transform.localPosition = new Vector3 (0, 0, -0.01f);
+			//bubbleBackground.transform.localPosition = new Vector3 (0, 0, 5000f);
 			childSprite.SetActive(true);
-
 		}
 	}
 
