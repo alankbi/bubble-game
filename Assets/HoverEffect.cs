@@ -4,10 +4,6 @@ public class HoverEffect : MonoBehaviour
 {
 	private Game game;
 	private Sprite objectSprite;
-	private Sprite bubbleSprite;
-	private SpriteRenderer spriteRenderer;
-	private Vector3 bubbleScale;
-	private Vector3 objectScale;
 	private float bubbleColliderScale;
 	private float objectColliderScale;
 	private Bubble bubbleObject;
@@ -16,12 +12,6 @@ public class HoverEffect : MonoBehaviour
 
 	void Start() {
 		game = GameObject.Find("Main Camera").GetComponent<Game>();
-		spriteRenderer = gameObject.GetComponent<SpriteRenderer> ();
-		bubbleScale = gameObject.transform.localScale;
-		objectScale = gameObject.transform.localScale / 5;
-		bubbleSprite = (Sprite)Resources.Load ("BubbleSprites/Bubble", typeof(Sprite));
-		//bubbleColliderScale = gameObject.GetComponent<CircleCollider2D>().radius;
-		//objectColliderScale = bubbleColliderScale * 5;
 
 		var index = -1;
 		var bubbles = game.bubbles;
@@ -37,7 +27,7 @@ public class HoverEffect : MonoBehaviour
 		if (bubbleObject != null) {
 			objectSprite = (Sprite)Resources.Load ("BubbleSprites/" + bubbleObject.Sprite + (bubbleObject.Sprite.Contains("pic") ? "" : "t"), typeof(Sprite));
 			childSprite = Instantiate (bubbleObject.bubble, bubbleObject.bubble.transform);
-			childSprite.transform.localPosition = new Vector3 (0, 0, 0);//-0.01f);
+			childSprite.transform.localPosition = new Vector3 (0, 0, 0);
 			childSprite.GetComponent<SpriteRenderer> ().sprite = objectSprite;
 			Destroy (childSprite.GetComponent<CircleCollider2D> ());
 			childSprite.transform.localScale = new Vector2(0.15f, 0.15f);
@@ -59,13 +49,6 @@ public class HoverEffect : MonoBehaviour
 	void OnMouseOver()
 	{
 		if (bubbleObject != null) {
-			//var sprite = bubbleObject.Sprite;
-			//spriteRenderer.sprite = (Sprite)Resources.Load ("BubbleSprites/" + sprite + (sprite.Contains("Part") ? "t" : ""), typeof(Sprite));
-			//gameObject.transform.localScale = objectScale;
-			//gameObject.GetComponent<CircleCollider2D>().radius = objectColliderScale;
-
-			//childSprite.transform.localPosition = new Vector3 (0, 0, -0.01f);
-			//bubbleBackground.transform.localPosition = new Vector3 (0, 0, 5000f);
 			childSprite.SetActive(true);
 		}
 	}
@@ -74,10 +57,6 @@ public class HoverEffect : MonoBehaviour
 	{
 		if (bubbleObject != null) {
 			childSprite.SetActive (false);
-
-			//spriteRenderer.sprite = bubbleSprite;
-			//gameObject.transform.localScale = bubbleScale;
-			//gameObject.GetComponent<CircleCollider2D>().radius = bubbleColliderScale;
 		}
 	}
 }
