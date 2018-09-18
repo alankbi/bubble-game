@@ -348,16 +348,25 @@ public class Game : MonoBehaviour {
 	}
 
 	void ShowPoppedObject(GameObject clickedObject, string sprite) {
+		var backgroundBubble = Instantiate (clickedObject, canvas);
+		var pos = backgroundBubble.transform.localPosition;
+		backgroundBubble.transform.localPosition = new Vector3 (pos.x, pos.y, -0.001f);
+		Destroy(backgroundBubble.GetComponent<CircleCollider2D>());
+
+		poppedAppearances.Enqueue (backgroundBubble);
+
 		var poppedObject = Instantiate (clickedObject, canvas);
 		poppedObject.GetComponent<SpriteRenderer> ().sprite = (Sprite)Resources.Load ("BubbleSprites/" + sprite + (sprite.Contains("Item5") ? "" : "t"), typeof(Sprite));
-		poppedObject.transform.localScale /= 5;
-		var pos = poppedObject.transform.localPosition;
+		poppedObject.transform.localScale /= 7;
+		pos = poppedObject.transform.localPosition;
 		poppedObject.transform.localPosition = new Vector3 (pos.x, pos.y, -0.01f);
+		Destroy(poppedObject.GetComponent<CircleCollider2D>());
 		poppedAppearances.Enqueue (poppedObject);
 		Invoke ("HidePoppedObject", 1);
 	}
 
 	void HidePoppedObject() {
+		Destroy (poppedAppearances.Dequeue ());
 		Destroy (poppedAppearances.Dequeue ());
 	}
 }
