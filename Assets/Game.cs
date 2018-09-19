@@ -26,7 +26,9 @@ public class Game : MonoBehaviour {
 
 	private float poppedPosition;
 
-	private const int BubbleCount = 300;
+	private const int BubbleCount = 50;
+	private const int TuffyCount = 200;
+	private const int PartCount = 10;
 	private int RealBubbleCount;
 
 	public GameObject[] gameOverButtons;
@@ -99,11 +101,14 @@ public class Game : MonoBehaviour {
 		for (int i = 0; i < items.Length; i++) {
 			var temp = DefaultPartCounts [i] == 1 ? 2 : DefaultPartCounts [i];
 			for (int j = 1; j < temp; j++) {
-				string sprite = "Item" + (i + 1) + "/Part" + (j + 1);
-				int divideBySize = 5 * (int)randomNormal (7, 4, 3, 12);
-				bubbleObjects.Add(CreateBubble (sprite, divideBySize));
-				bubbles.Add (bubbleObjects [tempCount].bubble);
-				tempCount++;
+				int duplicateCount = i == itemIndex ? 1 : PartCount;
+				for (int k = 0; k < duplicateCount; k++) {
+					string sprite = "Item" + (i + 1) + "/Part" + (j + 1);
+					int divideBySize = 5 * (int)randomNormal (7, 4, 3, 12);
+					bubbleObjects.Add (CreateBubble (sprite, divideBySize));
+					bubbles.Add (bubbleObjects [tempCount].bubble);
+					tempCount++;
+				}
 			}
 		}
 
@@ -120,7 +125,7 @@ public class Game : MonoBehaviour {
 		}
 
 		// Random tuffy objects
-		for (int i = tempCount; i < tempCount + 90; i++) {
+		for (int i = tempCount; i < tempCount + TuffyCount; i++) {
 			int pic;
 			do {
 				pic = (int) (Random.value * tuffies.Length);
@@ -130,7 +135,7 @@ public class Game : MonoBehaviour {
 			bubbleObjects.Add(CreateBubble (sprite, divideBySize));
 			bubbles.Add(bubbleObjects[i].bubble);
 		}
-		tempCount += 90;
+		tempCount += TuffyCount;
 
 		for (int i = tempCount; i < BubbleCount; i++) {
 			string sprite = "Bubble"; 
@@ -193,7 +198,7 @@ public class Game : MonoBehaviour {
 			pos = new Vector3 ((float)(Random.value * canvasDimensions.width - canvasDimensions.width / 2), 
 				(float)((Random.value - 0.5f) * canvasDimensions.height), 
 				Random.value);
-		} while (Vector3.Distance(pos, items[itemIndex].transform.localPosition) < 70 || menuButtonBounds.Contains(pos));
+		} while (Vector3.Distance(pos, items[itemIndex].transform.localPosition) < 55 /*|| menuButtonBounds.Contains(pos)*/);
 
 		int maxYSpeed = sprite.Contains ("Item") ? 7 : 10;
 
@@ -290,7 +295,7 @@ public class Game : MonoBehaviour {
 			bubbles.Remove (bubble);
 
 			if (!sprite.Equals ("Bubble")) {
-				StartCoroutine(AddBubbles ());
+				//StartCoroutine(AddBubbles ());
 				ShowPoppedObject (bubble, sprite);
 			}
 			Destroy (bubble);
