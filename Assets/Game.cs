@@ -172,7 +172,7 @@ public class Game : MonoBehaviour {
 		CheckClicks ();
 		HandleBubbleMotion ();
 
-		isGameOver = (collectedPartsCount == RealBubbleCount);
+		isGameOver = (collectedPartsCount >= RealBubbleCount && collectedPartsCount < 100);
 
 		if (isGameOver) {
 			timeElapsed += Time.deltaTime;
@@ -180,7 +180,7 @@ public class Game : MonoBehaviour {
 			if (timeElapsed >= 2) {
 				timeElapsed = 0;
 				isGameOver = false;
-				collectedPartsCount += 99; // to stop GameOver triggering more than once
+				collectedPartsCount += 999; // to stop GameOver triggering more than once
 				//StartCoroutine(AnimateTuffy ());
 
 				foreach (GameObject button in gameOverButtons) {
@@ -301,7 +301,6 @@ public class Game : MonoBehaviour {
 			Destroy (bubble);
 			bubbleObjects.RemoveAt(currentIndex);
 		} 
-
 		clickOccurred = true;
 
 		StartCoroutine (FadeInstructions());
@@ -340,9 +339,9 @@ public class Game : MonoBehaviour {
 
 	IEnumerator AnimateTuffy() {
 		int width = (int) (tuffy.GetComponent<RectTransform> ().rect.width * tuffy.transform.localScale.x);
-		for (int i = 0; i < width / 2; i++) {
+		for (int i = 0; i < width / 4; i++) {
 			var pos = tuffy.transform.localPosition;
-			tuffy.transform.localPosition = new Vector3 (pos.x - 2, pos.y + (i % 2 == 0 ? 1 : 1), -0.01f);
+			tuffy.transform.localPosition = new Vector3 (pos.x - 4, pos.y + 3, -0.01f);
 			yield return null;
 		}
 	}
