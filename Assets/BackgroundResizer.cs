@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class BackgroundResizer : MonoBehaviour
 {
@@ -15,11 +13,5 @@ public class BackgroundResizer : MonoBehaviour
         canvasDimensions = canvas.GetComponent<RectTransform>().rect;
         var backgroundDimensions = background.GetComponent<SpriteRenderer>().sprite.bounds.size;
         background.transform.localScale = new Vector2(canvasDimensions.width / (1 * backgroundDimensions.x), canvasDimensions.height / (1 * backgroundDimensions.y));
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }

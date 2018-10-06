@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Bubble
 {
@@ -35,10 +33,6 @@ public class Bubble
             new Vector2(canvasDimensions.height / divideBySize, canvasDimensions.height / divideBySize);
 
         var collider = bubble.AddComponent<CircleCollider2D>();
-        if (sprite.Contains("Item") || sprite.Equals("tuffy"))
-        {
-            //collider.radius *= 5;
-        }
         bubble.layer = 0;
         Physics2D.IgnoreLayerCollision(0, 0);
 

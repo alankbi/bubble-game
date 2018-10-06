@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
 public class Main : MonoBehaviour
@@ -17,11 +15,5 @@ public class Main : MonoBehaviour
         soundPlayer.PlayStartSound();
 
         soundPlayer.PlayBackgroundMusic();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }

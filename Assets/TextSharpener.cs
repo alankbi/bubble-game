@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class TextSharpener : MonoBehaviour
@@ -16,12 +14,6 @@ public class TextSharpener : MonoBehaviour
         {
             SharpenText(t);
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     public static void SharpenText(Text t)

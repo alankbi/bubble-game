@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Timers;
-using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(AudioSource))]
 public class Game : MonoBehaviour
@@ -22,7 +20,6 @@ public class Game : MonoBehaviour
 
     private float timeElapsed;
 
-    private bool clickOccurred;
     private bool isGameOver;
 
     private float poppedPosition;
@@ -164,7 +161,6 @@ public class Game : MonoBehaviour
         currentIndex = -1;
 
         timeElapsed = 0;
-        clickOccurred = false;
         isGameOver = false;
 
         poppedPosition = -canvasDimensions.width / 2 + canvasDimensions.width / BubbleCount;
@@ -199,7 +195,6 @@ public class Game : MonoBehaviour
                 timeElapsed = 0;
                 isGameOver = false;
                 collectedPartsCount += 999; // to stop GameOver triggering more than once
-                                            //StartCoroutine(AnimateTuffy ());
 
                 foreach (GameObject button in gameOverButtons)
                 {
@@ -219,7 +214,7 @@ public class Game : MonoBehaviour
             pos = new Vector3((float)(Random.value * canvasDimensions.width - canvasDimensions.width / 2),
                 (float)((Random.value - 0.5f) * canvasDimensions.height),
                 Random.value);
-        } while (Vector3.Distance(pos, items[itemIndex].transform.localPosition) < 55 /*|| menuButtonBounds.Contains(pos)*/);
+        } while (Vector3.Distance(pos, items[itemIndex].transform.localPosition) < 55);
 
         int maxYSpeed = sprite.Contains("Item") ? 7 : 10;
 
@@ -289,13 +284,11 @@ public class Game : MonoBehaviour
 
     void HandleClick(GameObject bubble)
     {
-        bool found = false;
         for (int i = 0; i < bubbles.Count; i++)
         {
             if (bubble == bubbles[i])
             {
                 currentIndex = i;
-                found = true;
                 break;
             }
         }
@@ -308,8 +301,9 @@ public class Game : MonoBehaviour
 
 
         var sprite = bubbleObjects[currentIndex].Sprite;
+        // If correct item clicked
         if (sprite.Contains("Item" + (itemIndex + 1)) && (!isTuffyVariant || sprite.Contains("pic" + tuffyIndex)) || sprite.Equals("Item1/Part1") && !isTuffyVariant)
-        { // Correct
+        {
             if (touchCount % 2 == 0 && collectedPartsCount + 1 != RealBubbleCount)
             {
                 soundPlayer.PlayCorrectAnswerSounds();
@@ -331,7 +325,6 @@ public class Game : MonoBehaviour
 
             char partNumber = isTuffyVariant ? '2' : sprite[sprite.Length - 1];
             var part = items[itemIndex].transform.Find("Part" + partNumber).gameObject;
-            //part.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, 1f);
             part.GetComponent<SpriteRenderer>().material = defaultMaterial;
 
             touchCount++;
@@ -350,7 +343,6 @@ public class Game : MonoBehaviour
             Destroy(bubble);
             bubbleObjects.RemoveAt(currentIndex);
         }
-        clickOccurred = true;
 
         StartCoroutine(FadeInstructions());
     }
