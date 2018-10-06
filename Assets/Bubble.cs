@@ -2,48 +2,52 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bubble {
-	
-	public string Sprite { get; private set; }
+public class Bubble
+{
 
-	public float Period { get; private set; }
+    public string Sprite { get; private set; }
 
-	public float Amplitude { get; private set; }
+    public float Period { get; private set; }
 
-	public GameObject bubble { get; set; }
+    public float Amplitude { get; private set; }
 
-	public Bubble(string sprite, Vector3 pos, Vector2 vel, Transform canvas, int divideBySize) {
-		Sprite = sprite;
+    public GameObject bubble { get; set; }
 
-		var bubble = new GameObject ();
-		bubble.transform.SetParent (canvas);
+    public Bubble(string sprite, Vector3 pos, Vector2 vel, Transform canvas, int divideBySize)
+    {
+        Sprite = sprite;
 
-		var rigidbody = bubble.AddComponent<Rigidbody2D>();
-		rigidbody.gravityScale = 0;
-		rigidbody.sharedMaterial = Resources.Load<PhysicsMaterial2D> ("Bouncy");
-		bubble.transform.localPosition = pos;
-		rigidbody.velocity = vel;
+        var bubble = new GameObject();
+        bubble.transform.SetParent(canvas);
 
-		if (sprite.Contains ("Item")) {
-			divideBySize /= 5;
-		}
-		var canvasDimensions = canvas.GetComponent<RectTransform> ().rect;
-		rigidbody.transform.localScale = 
-			new Vector2 (canvasDimensions.height / divideBySize, canvasDimensions.height / divideBySize);
+        var rigidbody = bubble.AddComponent<Rigidbody2D>();
+        rigidbody.gravityScale = 0;
+        rigidbody.sharedMaterial = Resources.Load<PhysicsMaterial2D>("Bouncy");
+        bubble.transform.localPosition = pos;
+        rigidbody.velocity = vel;
 
-		var collider = bubble.AddComponent<CircleCollider2D> ();
-		if (sprite.Contains ("Item") || sprite.Equals("tuffy")) {
-			//collider.radius *= 5;
-		}
-		bubble.layer = 0;
-		Physics2D.IgnoreLayerCollision (0, 0);
+        if (sprite.Contains("Item"))
+        {
+            divideBySize /= 5;
+        }
+        var canvasDimensions = canvas.GetComponent<RectTransform>().rect;
+        rigidbody.transform.localScale =
+            new Vector2(canvasDimensions.height / divideBySize, canvasDimensions.height / divideBySize);
 
-		var spriteRenderer = bubble.AddComponent<SpriteRenderer>();
-		spriteRenderer.sprite = Resources.Load<Sprite> ("BubbleSprites/Bubble");// + sprite);
+        var collider = bubble.AddComponent<CircleCollider2D>();
+        if (sprite.Contains("Item") || sprite.Equals("tuffy"))
+        {
+            //collider.radius *= 5;
+        }
+        bubble.layer = 0;
+        Physics2D.IgnoreLayerCollision(0, 0);
 
-		this.bubble = bubble;
+        var spriteRenderer = bubble.AddComponent<SpriteRenderer>();
+        spriteRenderer.sprite = Resources.Load<Sprite>("BubbleSprites/Bubble");// + sprite);
 
-		Period = Random.value * 4;
-		Amplitude = Random.value * Mathf.Min(rigidbody.velocity.y, 5);
-	}
+        this.bubble = bubble;
+
+        Period = Random.value * 4;
+        Amplitude = Random.value * Mathf.Min(rigidbody.velocity.y, 5);
+    }
 }
